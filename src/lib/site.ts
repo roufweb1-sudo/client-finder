@@ -8,6 +8,8 @@ export const CONTACT = {
   whatsapp: "918714059090",
   addressLine: "Areekode, Kerala 673639, India",
   site: "https://aiclientfinderapp.com",
+  /** Year shown in the footer. Fixed, because reading the clock while building breaks the page build. */
+  copyrightYear: "2026",
   /** Last time the policy pages were reviewed. Update when you change them. */
   policiesUpdated: "15 November 2026",
 } as const;
