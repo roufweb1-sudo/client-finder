@@ -79,3 +79,34 @@ export async function grantPro(userId: string, period: Period, days: number) {
   if (error) throw new Error(error.message);
   return expires;
 }
+
+/* ---------- Admin ---------- */
+
+/** Emails allowed to open the admin panel: ADMIN_EMAILS in .env.local, comma separated. */
+export function adminEmails(): string[] {
+  return (process.env.ADMIN_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/** The logged-in user, if (and only if) their email is in ADMIN_EMAILS. Otherwise null. */
+export async function adminFromRequest(request: Request): Promise<{ id: string; email: string } | null> {
+  const allowed = adminEmails();
+  if (!allowed.length) return null;
+  const auth = request.headers.get("authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token) return null;
+  const { data, error } = await adminDb().auth.getUser(token);
+  const email = data?.user?.email?.toLowerCase();
+  if (error || !data.user || !email || !data.user.email_confirmed_at) return null;
+  return allowed.includes(email) ? { id: data.user.id, email } : null;
+}
+
+/** Remove Pro from a user (admin action). */
+export async function revokePro(userId: string) {
+  const { error } = await adminDb()
+    .from("accounts")
+    .upsert({ user_id: userId, plan: "free", plan_period: null, plan_expires_at: null, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
+  if (error) throw new Error(error.message);
+}

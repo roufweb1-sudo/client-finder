@@ -26,4 +26,5 @@ export type AccountInfo = {
   expiresAt: string | null;
   usage: Record<UsageKind, number>;
   limits: Record<UsageKind, number>;
+  isAdmin?: boolean; // true only for emails listed in ADMIN_EMAILS
 };

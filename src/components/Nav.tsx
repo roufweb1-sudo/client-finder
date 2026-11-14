@@ -39,6 +39,7 @@ export default function Nav() {
             {link("/", "Find leads")}
             {link("/leads", `My leads${count ? ` (${count})` : ""}`)}
             {link("/settings", "My branding")}
+            {account?.isAdmin && link("/admin", "Admin")}
             <Link
               href="/plans"
               className={`ml-1 rounded-full px-3 py-1 text-xs font-semibold ${account?.plan === "pro" ? "bg-indigo-600 text-white" : "bg-amber-100 text-amber-800 hover:bg-amber-200"}`}
