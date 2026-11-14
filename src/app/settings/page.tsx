@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/Icon";
 import { useState } from "react";
 import { saveProfileNow, useLeadsLoaded, useProfile } from "@/lib/storage";
 import type { Profile } from "@/lib/types";
@@ -65,7 +66,7 @@ function BrandingForm({ saved }: { saved: Profile }) {
         value={draft[key]}
         onChange={(e) => update({ [key]: e.target.value })}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+        className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
       />
     </label>
   );
@@ -119,7 +120,7 @@ function BrandingForm({ saved }: { saved: Profile }) {
           <button
             type="submit"
             disabled={!dirty || status === "saving"}
-            className="rounded-lg bg-indigo-600 px-5 py-2 font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+            className="rounded-lg bg-violet-600 px-5 py-2 font-semibold text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
           >
             {status === "saving" ? "Saving…" : "Save"}
           </button>
@@ -131,7 +132,9 @@ function BrandingForm({ saved }: { saved: Profile }) {
               </button>
             </>
           )}
-          {!dirty && status === "saved" && <span className="text-sm font-medium text-emerald-600">✓ Saved</span>}
+          {!dirty && status === "saved" && <span className="flex items-center gap-1 text-sm font-medium text-emerald-600">
+              <Icon name="check" className="h-4 w-4" /> Saved
+            </span>}
         </div>
       </form>
     </div>

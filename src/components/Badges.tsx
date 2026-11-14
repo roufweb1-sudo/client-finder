@@ -1,3 +1,4 @@
+import Icon from "@/components/Icon";
 import type { Heat } from "@/lib/score";
 import type { WebsiteStatus } from "@/lib/types";
 
@@ -8,9 +9,10 @@ export function HeatBadge({ heat, score }: { heat: Heat; score: number }) {
       : heat === "warm"
         ? "bg-amber-100 text-amber-800 ring-amber-200"
         : "bg-slate-100 text-slate-600 ring-slate-200";
-  const label = heat === "hot" ? "🔥 Hot" : heat === "warm" ? "Warm" : "Cold";
+  const label = heat === "hot" ? "Hot" : heat === "warm" ? "Warm" : "Cold";
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${style}`}>
+      {heat === "hot" && <Icon name="flame" className="h-3.5 w-3.5" />}
       {label} <span className="font-normal opacity-70">{score}</span>
     </span>
   );

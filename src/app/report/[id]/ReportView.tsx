@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/Icon";
 import Link from "next/link";
 import ErrorNote from "@/components/ErrorNote";
 import { useEffect, useRef, useState } from "react";
@@ -8,10 +9,10 @@ import { whatsappNumber } from "@/lib/score";
 import { authFetch, updateLead, useLeads, useLeadsLoaded, useProfile } from "@/lib/storage";
 import type { Lead, SiteCheck } from "@/lib/types";
 
-const ICON: Record<CheckState, { sym: string; cls: string }> = {
-  pass: { sym: "✓", cls: "bg-emerald-100 text-emerald-700" },
+const ICON: Record<CheckState, { sym: React.ReactNode; cls: string }> = {
+  pass: { sym: <Icon name="check" className="h-3.5 w-3.5" strokeWidth={2.4} />, cls: "bg-emerald-100 text-emerald-700" },
   warn: { sym: "!", cls: "bg-amber-100 text-amber-700" },
-  fail: { sym: "✕", cls: "bg-rose-100 text-rose-700" },
+  fail: { sym: <Icon name="close" className="h-3.5 w-3.5" strokeWidth={2.4} />, cls: "bg-rose-100 text-rose-700" },
   unknown: { sym: "?", cls: "bg-slate-100 text-slate-500" },
 };
 
@@ -43,7 +44,7 @@ function ScoreRing({ score, grade }: { score: number; grade: string }) {
 }
 
 function reportPitch(lead: Lead, name: string, score: number) {
-  return `Hi ${lead.name} team 👋\n\nI'm ${name || "[Your Name]"}, a website developer. I prepared a free online presence report for your business. Your score is ${score}/100, and I've listed a few simple fixes that can bring you more customers from Google.\n\nShall I send you the PDF? 😊`;
+  return `Hi ${lead.name} team,\n\nI'm ${name || "[Your Name]"}, a website developer. I prepared a free online presence report for your business. Your score is ${score}/100, and I've listed a few simple fixes that can bring you more customers from Google.\n\nShall I send you the PDF?`;
 }
 
 export default function ReportView({ id }: { id: string }) {
@@ -80,7 +81,7 @@ export default function ReportView({ id }: { id: string }) {
       <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200">
         <h1 className="text-xl font-bold">Report not found</h1>
         <p className="mt-2 text-slate-500">Save the lead first, then open its report.</p>
-        <Link href="/leads" className="mt-4 inline-block text-indigo-600 hover:underline">Go to My leads</Link>
+        <Link href="/leads" className="mt-4 inline-block text-violet-600 hover:underline">Go to My leads</Link>
       </div>
     );
   }
@@ -94,14 +95,17 @@ export default function ReportView({ id }: { id: string }) {
     <div className="space-y-4">
       {/* Toolbar (not printed) */}
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <Link href="/leads" className="text-sm text-slate-500 hover:text-slate-800">← My leads</Link>
+        <Link href="/leads" className="inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors hover:text-slate-800">
+          <Icon name="arrow" className="h-4 w-4 rotate-180" />
+          My leads
+        </Link>
         <div className="flex flex-wrap gap-2">
           {wa && (
             <a
               href={`https://wa.me/${wa}?text=${encodeURIComponent(reportPitch(lead, profile.name, report.score))}`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+              className="btn-shine inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
             >
               WhatsApp: offer the report
             </a>
@@ -109,7 +113,7 @@ export default function ReportView({ id }: { id: string }) {
           <button
             onClick={() => window.print()}
             disabled={needsCheck && !checkError}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
+            className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-60"
           >
             {needsCheck && !checkError ? "Checking website…" : "Download PDF"}
           </button>
@@ -137,7 +141,7 @@ export default function ReportView({ id }: { id: string }) {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">Free Online Presence Report</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-violet-600">Free Online Presence Report</p>
             <p className="text-xs text-slate-500">{today}</p>
           </div>
         </header>
@@ -148,7 +152,13 @@ export default function ReportView({ id }: { id: string }) {
             <h1 className="mt-1 text-2xl font-bold text-slate-900">{lead.name}</h1>
             <p className="mt-1 text-sm text-slate-500">{lead.address}</p>
             <p className="mt-2 text-sm text-slate-700">
-              {lead.rating !== null ? `⭐ ${lead.rating} on Google (${lead.reviews.toLocaleString("en-IN")} reviews)` : "No Google rating yet"}
+              {lead.rating !== null ? (
+                <>
+                  <Icon name="star" className="inline h-3.5 w-3.5 align-[-2px] text-amber-500" /> {lead.rating} on Google ({lead.reviews.toLocaleString("en-IN")} reviews)
+                </>
+              ) : (
+                "No Google rating yet"
+              )}
               {lead.website ? ` · ${lead.website.replace(/^https?:\/\/(www\.)?/, "").replace(/[?#].*$/, "")}` : " · No website"}
             </p>
           </div>
@@ -172,7 +182,7 @@ export default function ReportView({ id }: { id: string }) {
         </section>
 
         {lead.websiteStatus !== "website" && (
-          <section className="mt-6 rounded-xl bg-indigo-50 p-4 text-sm text-indigo-950 break-inside-avoid">
+          <section className="mt-6 rounded-xl bg-violet-50 p-4 text-sm text-violet-950 break-inside-avoid">
             <p className="font-semibold">Why this matters</p>
             <p className="mt-1">
               When people search for a business like yours on Google, they compare options in seconds. Businesses with a proper website look more

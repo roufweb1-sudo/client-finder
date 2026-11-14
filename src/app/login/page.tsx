@@ -1,5 +1,7 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
+import { LogoMark } from "@/components/Logo";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -76,11 +78,9 @@ export default function LoginPage() {
         : "Reset password";
 
   return (
-    <div className="mx-auto mt-10 max-w-sm">
+    <div className="animate-fade-up mx-auto mt-10 max-w-sm">
       <div className="mb-6 text-center">
-        <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-indigo-600 text-lg font-bold text-white">
-          CF
-        </span>
+        <LogoMark className="mx-auto h-12 w-12" />
         <h1 className="mt-3 text-2xl font-bold">{title}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Find businesses that need a website, and win them as clients.
@@ -137,7 +137,7 @@ export default function LoginPage() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
             />
           </label>
           {mode !== "reset" && (
@@ -154,7 +154,7 @@ export default function LoginPage() {
                 }
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
               />
               {mode === "signup" && (
                 <span className="text-xs text-slate-400">
@@ -178,8 +178,9 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={busy}
-            className="w-full rounded-lg bg-indigo-600 py-2.5 font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
+            className="btn-shine flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 py-2.5 font-semibold text-white shadow-sm transition-colors hover:bg-violet-700 disabled:opacity-60"
           >
+            {busy && <Spinner />}
             {busy
               ? "Please wait…"
               : mode === "signin"
@@ -198,7 +199,7 @@ export default function LoginPage() {
               New here?{" "}
               <button
                 onClick={() => setMode("signup")}
-                className="font-semibold text-indigo-600 hover:underline"
+                className="font-semibold text-violet-600 hover:underline"
               >
                 Create an account
               </button>
@@ -217,7 +218,7 @@ export default function LoginPage() {
             Already have an account?{" "}
             <button
               onClick={() => setMode("signin")}
-              className="font-semibold text-indigo-600 hover:underline"
+              className="font-semibold text-violet-600 hover:underline"
             >
               Log in
             </button>

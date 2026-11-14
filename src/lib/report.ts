@@ -253,7 +253,7 @@ export function presenceReport(lead: Lead): Presence {
     items.push({
       label: "Google rating",
       state: good ? "pass" : "warn",
-      detail: `${lead.rating} ★ average rating.`,
+      detail: `${lead.rating} average rating on Google.`,
       points: good ? 10 : 4,
       max: 10,
     });

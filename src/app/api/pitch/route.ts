@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     goal === "report"
       ? "- The free offer: a free 'Online Presence Report' (PDF) the freelancer has already prepared for them. Ask if they'd like it sent."
       : "- The free offer: a free sample homepage design / mockup, no obligation. Ask if they'd like to see it.",
-    "- No prices, no guarantees (never promise rankings or sales numbers), no pressure, no ALL CAPS, at most 2 emojis.",
+    "- No prices, no guarantees (never promise rankings or sales numbers), no pressure, no ALL CAPS, no emojis.",
     tone === "professional" ? "- Tone: polite and professional, but still warm." : "- Tone: friendly and conversational, like a helpful local person.",
     `- ${LANGUAGE_RULE[language]}`,
     `- Sign off with the sender's name${sender.brand ? " and brand" : ""}.`,

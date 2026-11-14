@@ -63,7 +63,7 @@ export function whatsappNumber(b: Pick<Business, "phone" | "intlPhone">): string
 
 /** Simple pitch template (AI-written pitches come in a later version). */
 export function pitchMessage(b: Business, check?: SiteCheck | null, myName = "[Your Name]"): string {
-  const hello = `Hi ${b.name} team 👋\n\nI'm ${myName}, a website developer.`;
+  const hello = `Hi ${b.name} team,\n\nI'm ${myName}, a website developer.`;
   let middle: string;
   if (b.websiteStatus === "none") {
     middle = `I came across your business on Google Maps${b.reviews ? ` – ${b.reviews.toLocaleString("en-IN")} reviews, that's amazing!` : "."} I noticed you don't have a website yet. A simple website with your products, location and a WhatsApp order button can bring in customers who search online.`;
@@ -76,5 +76,5 @@ export function pitchMessage(b: Business, check?: SiteCheck | null, myName = "[Y
   } else {
     middle = `I had a look at your website and have a few ideas to bring you more enquiries from it.`;
   }
-  return `${hello}\n\n${middle}\n\nCan I share a free sample design for you? No obligation 😊`;
+  return `${hello}\n\n${middle}\n\nCan I share a free sample design for you? No obligation.`;
 }

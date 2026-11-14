@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/Icon";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { HeatBadge, WebsiteBadge } from "@/components/Badges";
@@ -100,7 +101,7 @@ export default function LeadsPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`rounded-full px-3 py-1 text-sm ${tab === t ? "bg-indigo-600 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"}`}
+            className={`rounded-full px-3 py-1 text-sm ${tab === t ? "bg-violet-600 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"}`}
           >
             {t === "Due" ? "Follow-up due" : t} ({counts[t] ?? 0})
           </button>
@@ -122,14 +123,21 @@ export default function LeadsPage() {
                     <span className={`rounded px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[l.status]}`}>{l.status}</span>
                   </div>
                   <p className="mt-1 text-sm text-slate-600">
-                    {l.phone ? `📞 ${l.phone}` : "No phone"} · ⭐ {l.rating ?? "–"} ({l.reviews.toLocaleString("en-IN")}) · <span className="text-slate-400">from “{l.searchQuery}”</span>
+                    {l.phone ? (
+                      <>
+                        <Icon name="phone" className="inline h-3.5 w-3.5 align-[-2px] text-violet-500" /> {l.phone}
+                      </>
+                    ) : (
+                      "No phone"
+                    )}{" "}
+                    · <Icon name="star" className="inline h-3.5 w-3.5 align-[-2px] text-amber-500" /> {l.rating ?? "–"} ({l.reviews.toLocaleString("en-IN")}) · <span className="text-slate-400">from “{l.searchQuery}”</span>
                   </p>
                   <textarea
                     defaultValue={l.notes}
                     onBlur={(e) => updateLead(l.id, { notes: e.target.value })}
                     placeholder="Notes (e.g. spoke to owner, wants quote by Friday)"
                     rows={2}
-                    className="mt-2 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-indigo-400"
+                    className="mt-2 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-violet-400"
                   />
                 </div>
 
@@ -148,13 +156,14 @@ export default function LeadsPage() {
                   </label>
                   <button
                     onClick={() => setPitching(l)}
-                    className="rounded-lg bg-green-600 px-3 py-1.5 text-center text-sm font-medium text-white hover:bg-green-700"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-center text-sm font-medium text-white transition-colors hover:bg-emerald-700"
                   >
-                    ✨ AI pitch
+                    <Icon name="spark" className="h-4 w-4" />
+                    AI pitch
                   </button>
                   <Link
                     href={`/report/${encodeURIComponent(l.id)}`}
-                    className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-center text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+                    className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-1.5 text-center text-sm font-medium text-violet-700 hover:bg-violet-100"
                   >
                     Audit report
                   </Link>
