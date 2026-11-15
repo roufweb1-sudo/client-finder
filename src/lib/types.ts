@@ -48,3 +48,6 @@ export type Profile = {
 export type PitchLanguage = "english" | "malayalam" | "manglish";
 export type PitchTone = "friendly" | "professional";
 export type PitchGoal = "website" | "report";
+
+/** Which message in the follow-up sequence to write. */
+export type FollowUpStep = "nudge" | "value" | "last";
