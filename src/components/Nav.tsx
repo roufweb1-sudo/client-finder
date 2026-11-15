@@ -67,7 +67,7 @@ export default function Nav() {
     ? [
         { href: "/", label: "Find leads", icon: "search" },
         { href: "/leads", label: "My leads", icon: "users", count },
-        { href: "/settings", label: "My branding", icon: "sliders" },
+        { href: "/settings", label: "Settings", icon: "sliders" },
         ...(account?.isAdmin ? [{ href: "/admin", label: "Admin", icon: "shield" as const }] : []),
         { href: "/plans", icon: "crown", label: account?.plan === "pro" ? "Pro plan" : "Upgrade to Pro" },
       ]

@@ -122,7 +122,7 @@ export default function ReportView({ id }: { id: string }) {
       </div>
       {profileIncomplete && (
         <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200 print:hidden">
-          Add your name, WhatsApp number and logo in <Link href="/settings" className="font-semibold underline">My branding</Link> so they appear on the report.
+          Add your name, WhatsApp number and logo in <Link href="/settings" className="font-semibold underline">Settings</Link> so they appear on the report.
         </p>
       )}
       <p className="text-xs text-slate-400 print:hidden">Tip: in the print window choose <b>“Save as PDF”</b> as the destination.</p>
@@ -210,7 +210,7 @@ export default function ReportView({ id }: { id: string }) {
             {profile.name || "Your Name"}
             {profile.brand ? ` · ${profile.brand}` : ""}
           </p>
-          <p className="text-sm text-slate-300">{[profile.phone && `WhatsApp: ${profile.phone}`, profile.email].filter(Boolean).join(" · ") || "Add your contact details in My branding"}</p>
+          <p className="text-sm text-slate-300">{[profile.phone && `WhatsApp: ${profile.phone}`, profile.email].filter(Boolean).join(" · ") || "Add your contact details in Settings"}</p>
         </section>
 
         <footer className="mt-6 text-[11px] leading-relaxed text-slate-400">

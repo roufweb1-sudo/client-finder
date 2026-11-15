@@ -3,6 +3,7 @@
 import Icon from "@/components/Icon";
 import { useEffect, useState } from "react";
 import ErrorNote from "@/components/ErrorNote";
+import UsageBar from "@/components/UsageBar";
 import { refreshAccount, useAccount } from "@/lib/account";
 import { KIND_LABEL, LIMITS, PRICES, type Period, type UsageKind } from "@/lib/plans";
 import { authFetch, useAuth } from "@/lib/storage";
@@ -36,24 +37,6 @@ function Tick({ children }: { children: React.ReactNode }) {
       <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
       <span>{children}</span>
     </li>
-  );
-}
-
-function UsageBar({ kind, used, limit }: { kind: UsageKind; used: number; limit: number }) {
-  const pct = Math.min(100, Math.round((used / limit) * 100));
-  const color = pct >= 100 ? "bg-rose-500" : pct >= 80 ? "bg-amber-500" : "bg-violet-500";
-  return (
-    <div>
-      <div className="flex justify-between text-sm">
-        <span className="text-slate-600">{KIND_LABEL[kind]}</span>
-        <span className="font-medium text-slate-800">
-          {used} / {limit.toLocaleString("en-IN")}
-        </span>
-      </div>
-      <div className="mt-1 h-2 rounded-full bg-slate-100">
-        <div className={`h-2 rounded-full ${color}`} style={{ width: `${pct}%` }} />
-      </div>
-    </div>
   );
 }
 

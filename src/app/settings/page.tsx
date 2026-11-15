@@ -1,142 +1,183 @@
 "use client";
 
-import Icon from "@/components/Icon";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { saveProfileNow, useLeadsLoaded, useProfile } from "@/lib/storage";
-import type { Profile } from "@/lib/types";
+import BrandingForm from "@/components/BrandingForm";
+import Icon, { type IconName } from "@/components/Icon";
+import UsageBar from "@/components/UsageBar";
+import { useAccount } from "@/lib/account";
+import { KIND_LABEL, type UsageKind } from "@/lib/plans";
+import { signOut, useAuth, useLeads, useLeadsLoaded, useProfile } from "@/lib/storage";
 
-// Shrink an uploaded logo so it stays small in the database
-function resizeImage(file: File, max = 300): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Could not read file"));
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = () => reject(new Error("Not an image"));
-      img.onload = () => {
-        const scale = Math.min(1, max / Math.max(img.width, img.height));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        canvas.getContext("2d")?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/png"));
-      };
-      img.src = reader.result as string;
-    };
-    reader.readAsDataURL(file);
-  });
-}
+type Tab = "branding" | "plan" | "account";
+
+const TABS: { id: Tab; label: string; icon: IconName; blurb: string }[] = [
+  { id: "branding", label: "My branding", icon: "sliders", blurb: "Your name, logo and contact details on every pitch and report." },
+  { id: "plan", label: "Plan & usage", icon: "crown", blurb: "What you are on, and how much of this month you have used." },
+  { id: "account", label: "My account", icon: "lock", blurb: "The email you sign in with." },
+];
 
 export default function SettingsPage() {
+  const [tab, setTab] = useState<Tab>("branding");
   const profile = useProfile();
   const loaded = useLeadsLoaded(); // branding loads together with leads
-  if (!loaded) return <p className="py-20 text-center text-slate-400">Loading your branding…</p>;
-  // The form starts from the saved values (they're loaded by now)
-  return <BrandingForm saved={profile} />;
+  const current = TABS.find((t) => t.id === tab) ?? TABS[0];
+
+  return (
+    <div className="mx-auto max-w-4xl">
+      <h1 className="text-2xl font-bold">Settings</h1>
+      <p className="mt-1 text-sm text-slate-500">{current.blurb}</p>
+
+      <div className="mt-5 gap-6 lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
+        {/* Desktop: a side list. Mobile: the same items as a scrollable chip row. */}
+        <nav aria-label="Settings sections" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:mx-0 lg:grid lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0">
+          {TABS.map((t) => {
+            const active = t.id === tab;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                aria-current={active ? "page" : undefined}
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-medium transition-colors lg:w-full lg:justify-start ${
+                  active ? "bg-violet-50 text-violet-700 ring-1 ring-violet-200" : "text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50 lg:ring-0"
+                }`}
+              >
+                <Icon name={t.icon} className="size-4 shrink-0 text-violet-600" />
+                {t.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="mt-4 lg:mt-0">
+          {tab === "branding" && (loaded ? <BrandingForm saved={profile} /> : <p className="py-16 text-center text-slate-400">Loading your branding…</p>)}
+          {tab === "plan" && <PlanPanel />}
+          {tab === "account" && <AccountPanel />}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function BrandingForm({ saved }: { saved: Profile }) {
-  const [draft, setDraft] = useState<Profile>(saved);
-  const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
-  const [error, setError] = useState<string | null>(null);
+function Card({ children }: { children: React.ReactNode }) {
+  return <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">{children}</section>;
+}
 
-  const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
+function PlanPanel() {
+  const account = useAccount();
+  const isPro = account?.plan === "pro";
+  const expires = account?.expiresAt
+    ? new Date(account.expiresAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
+    : null;
 
-  function update(patch: Partial<Profile>) {
-    setDraft((d) => ({ ...d, ...patch }));
-    setStatus("idle");
-    setError(null);
+  return (
+    <div className="space-y-4">
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Your plan</p>
+            <p className="mt-1 flex items-center gap-2 text-xl font-bold">
+              {isPro && <Icon name="crown" className="size-5 text-violet-600" />}
+              {account ? (isPro ? `Pro · ${account.period === "yearly" ? "yearly" : "monthly"}` : "Free") : "…"}
+            </p>
+            {isPro && expires && <p className="mt-1 text-sm text-slate-500">Renews or ends on {expires}</p>}
+            {!isPro && account && <p className="mt-1 text-sm text-slate-500">Upgrade for 25 searches and 300 AI pitches a month.</p>}
+          </div>
+          <Link
+            href="/plans"
+            className="btn-shine inline-flex min-h-11 items-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-semibold text-white hover:bg-violet-700"
+          >
+            {isPro ? "Extend plan" : "Upgrade to Pro"}
+            <Icon name="arrow" className="size-4" />
+          </Link>
+        </div>
+      </Card>
+
+      <Card>
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">This month</p>
+        <div className="mt-4 space-y-4">
+          {account ? (
+            (Object.keys(KIND_LABEL) as UsageKind[]).map((k) => <UsageBar key={k} kind={k} used={account.usage[k]} limit={account.limits[k]} />)
+          ) : (
+            <p className="text-sm text-slate-400">Loading your usage…</p>
+          )}
+        </div>
+        <p className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500">
+          Allowances reset on the 1st of each month. A pitch that fails is not counted.
+        </p>
+      </Card>
+    </div>
+  );
+}
+
+function AccountPanel() {
+  const { session } = useAuth();
+  const router = useRouter();
+  const leads = useLeads().length;
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [error, setError] = useState(false);
+  const email = session?.user.email ?? "";
+  const joined = session?.user.created_at
+    ? new Date(session.user.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
+    : null;
+
+  async function logout() {
+    setLoggingOut(true);
+    setError(false);
+    try {
+      await signOut();
+      router.replace("/login");
+    } catch {
+      setError(true);
+      setLoggingOut(false);
+    }
   }
 
-  async function save(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("saving");
-    const err = await saveProfileNow(draft);
-    if (err) {
-      setError(err);
-      setStatus("idle");
-    } else setStatus("saved");
-  }
-
-  const field = (key: keyof Omit<Profile, "logo">, label: string, placeholder: string, type = "text") => (
-    <label className="block">
-      <span className="text-sm font-medium text-slate-700">{label}</span>
-      <input
-        type={type}
-        value={draft[key]}
-        onChange={(e) => update({ [key]: e.target.value })}
-        placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
-      />
-    </label>
+  const row = (label: string, value: string) => (
+    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 py-3 last:border-0">
+      <span className="text-sm text-slate-500">{label}</span>
+      <span className="text-sm font-medium break-all text-slate-800">{value}</span>
+    </div>
   );
 
   return (
-    <div className="mx-auto max-w-xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">My branding</h1>
-        <p className="mt-1 text-sm text-slate-500">These details appear on your pitch messages and audit reports.</p>
-      </div>
-
-      <form onSubmit={save} className="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-        {field("name", "Your name", "e.g. Abdul Rouf")}
-        {field("brand", "Business / brand name", "e.g. Roufweb Solutions")}
-        {field("phone", "WhatsApp number (shown on reports)", "e.g. +91 87140 59090", "tel")}
-        {field("email", "Email", "e.g. hello@yourbrand.com", "email")}
-
-        <div>
-          <span className="text-sm font-medium text-slate-700">Logo</span>
-          <div className="mt-2 flex items-center gap-4">
-            {draft.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={draft.logo} alt="Your logo" className="h-16 w-16 rounded-lg object-contain ring-1 ring-slate-200" />
-            ) : (
-              <div className="grid h-16 w-16 place-items-center rounded-lg bg-slate-100 text-xs text-slate-400">No logo</div>
-            )}
-            <label className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50">
-              Upload logo
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (f) update({ logo: await resizeImage(f) });
-                  e.target.value = "";
-                }}
-              />
-            </label>
-            {draft.logo && (
-              <button type="button" onClick={() => update({ logo: "" })} className="text-sm text-slate-400 hover:text-rose-600">
-                Remove
-              </button>
-            )}
-          </div>
+    <div className="space-y-4">
+      <Card>
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Signed in as</p>
+        <div className="mt-3 flex items-center gap-3">
+          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-violet-100 text-base font-bold text-violet-700">
+            {(email[0] || "?").toUpperCase()}
+          </span>
+          <span className="min-w-0 break-all font-medium text-slate-900">{email || "…"}</span>
         </div>
-
-        {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">Couldn&apos;t save: {error}</p>}
-
-        <div className="flex items-center gap-3 border-t border-slate-100 pt-4">
-          <button
-            type="submit"
-            disabled={!dirty || status === "saving"}
-            className="rounded-lg bg-violet-600 px-5 py-2 font-semibold text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
-          >
-            {status === "saving" ? "Saving…" : "Save"}
-          </button>
-          {dirty && status !== "saving" && (
-            <>
-              <span className="text-sm text-amber-600">You have unsaved changes</span>
-              <button type="button" onClick={() => update(saved)} className="text-sm text-slate-400 hover:text-slate-700">
-                Undo
-              </button>
-            </>
-          )}
-          {!dirty && status === "saved" && <span className="flex items-center gap-1 text-sm font-medium text-emerald-600">
-              <Icon name="check" className="h-4 w-4" /> Saved
-            </span>}
+        <div className="mt-4">
+          {joined && row("Member since", joined)}
+          {row("Saved leads", String(leads))}
         </div>
-      </form>
+        <p className="mt-3 text-xs text-slate-500">
+          You sign in with Google, so there is no password to change here. To use a different address, log out and sign in with that Google account.
+        </p>
+      </Card>
+
+      <Card>
+        <button
+          onClick={logout}
+          disabled={loggingOut}
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+        >
+          <Icon name="logout" className="size-4 text-violet-600" />
+          {loggingOut ? "Logging out…" : "Log out"}
+        </button>
+        {error && <p className="mt-2 text-sm text-rose-700">Couldn&apos;t log out. Try again.</p>}
+        <p className="mt-3 text-xs text-slate-500">
+          Need your account or data removed? Email{" "}
+          <a href="mailto:support@aiclientfinderapp.com" className="font-medium text-violet-700 underline">
+            support@aiclientfinderapp.com
+          </a>
+          .
+        </p>
+      </Card>
     </div>
   );
 }
