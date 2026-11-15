@@ -3,22 +3,25 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ErrorNote from "@/components/ErrorNote";
 import Icon from "@/components/Icon";
+import MessageActions from "@/components/MessageActions";
 import Spinner from "@/components/Spinner";
 import { refreshAccount } from "@/lib/account";
 import { whatsappNumber } from "@/lib/score";
 import { authFetch, useProfile } from "@/lib/storage";
-import type { FollowUpStep, Lead, PitchLanguage, PitchTone } from "@/lib/types";
+import { updateLead } from "@/lib/storage";
+import type { FollowUpStep, Lead, PitchChannel, PitchLanguage, PitchTone } from "@/lib/types";
 
 const PREFS_KEY = "cf_pitch_prefs"; // shared with the first-pitch window
 
-type Prefs = { language: PitchLanguage; tone: PitchTone };
+type Prefs = { language: PitchLanguage; tone: PitchTone; channel: PitchChannel };
+
+const DEFAULTS: Prefs = { language: "english", tone: "friendly", channel: "whatsapp" };
 
 function loadPrefs(): Prefs {
   try {
-    const saved = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
-    return { language: "english", tone: "friendly", ...saved };
+    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(PREFS_KEY) || "{}") };
   } catch {
-    return { language: "english", tone: "friendly" };
+    return DEFAULTS;
   }
 }
 
@@ -56,9 +59,10 @@ export default function FollowUpModal({ lead, onClose, onSent }: Props) {
   const [step, setStep] = useState<FollowUpStep>(() => suggestStep(lead));
   const [context, setContext] = useState("");
   const [text, setText] = useState("");
+  const [subject, setSubject] = useState("");
+  const [email, setEmail] = useState(lead.email || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
   const started = useRef(false);
   const wa = whatsappNumber(lead);
   const current = STEPS.find((s) => s.id === step) ?? STEPS[0];
@@ -75,12 +79,14 @@ export default function FollowUpModal({ lead, onClose, onSent }: Props) {
           language: p.language,
           tone: p.tone,
           step: s,
+          channel: p.channel,
           context: note,
           daysSince: daysSince(lead.savedAt),
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || "Could not write the follow-up");
         setText(json.message);
+        setSubject(json.subject || "");
         void refreshAccount();
       } catch (e) {
         setError((e as Error).message);
@@ -162,6 +168,15 @@ export default function FollowUpModal({ lead, onClose, onSent }: Props) {
 
         <div className="mt-4 space-y-2 text-sm">
           <div className="flex flex-wrap items-center gap-2">
+            <span className="w-20 text-slate-500">Send by</span>
+            {(["whatsapp", "email"] as const).map((c) => (
+              <button key={c} disabled={loading} onClick={() => changePrefs({ channel: c })} className={`${chip(prefs.channel === c)} inline-flex items-center gap-1.5`}>
+                <Icon name={c === "whatsapp" ? "whatsapp" : "mail"} className="h-3.5 w-3.5" />
+                {c === "whatsapp" ? "WhatsApp" : "Email"}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
             <span className="w-20 text-slate-500">Language</span>
             {(["english", "malayalam", "manglish"] as const).map((l) => (
               <button key={l} disabled={loading} onClick={() => changePrefs({ language: l })} className={chip(prefs.language === l)}>
@@ -196,7 +211,7 @@ export default function FollowUpModal({ lead, onClose, onSent }: Props) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={8}
-            placeholder={loading ? "" : "Your follow-up will appear here"}
+            placeholder={loading ? "" : prefs.channel === "email" ? "Your follow-up email will appear here" : "Your follow-up will appear here"}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm leading-relaxed outline-none focus:border-violet-400 focus:bg-white"
           />
           {loading && (
@@ -211,44 +226,21 @@ export default function FollowUpModal({ lead, onClose, onSent }: Props) {
         {error && <ErrorNote message={error} className="mt-2" />}
         <p className="mt-1 text-xs text-slate-400">Edit anything before you send it.</p>
 
-        <div className="mt-4 flex flex-wrap justify-end gap-2">
-          <button
-            onClick={() => generate(prefs, step, context)}
-            disabled={loading}
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-slate-300 px-3 text-sm transition-colors hover:bg-slate-50 disabled:opacity-50"
-          >
-            <Icon name="refresh" className="h-4 w-4" />
-            Try another
-          </button>
-          <button
-            onClick={async () => {
-              await navigator.clipboard.writeText(text);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 1500);
-            }}
-            disabled={!text || loading}
-            className="min-h-11 rounded-lg border border-slate-300 px-3 text-sm hover:bg-slate-50 disabled:opacity-50"
-          >
-            {copied ? "Copied" : "Copy"}
-          </button>
-          {wa ? (
-            <a
-              href={text && !loading ? `https://wa.me/${wa}?text=${encodeURIComponent(text)}` : undefined}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => onSent?.(step === "last" ? 0 : step === "nudge" ? 5 : 7)}
-              aria-disabled={!text || loading}
-              className={`btn-shine inline-flex min-h-11 items-center gap-2 rounded-lg bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-700 ${
-                !text || loading ? "pointer-events-none opacity-50" : ""
-              }`}
-            >
-              <Icon name="chat" className="h-4 w-4" />
-              Send on WhatsApp
-            </a>
-          ) : (
-            <span className="px-2 py-2 text-xs text-slate-400">No mobile number listed: copy the message instead</span>
-          )}
-        </div>
+        <MessageActions
+          channel={prefs.channel}
+          text={text}
+          subject={subject}
+          onSubjectChange={setSubject}
+          email={email}
+          onEmailChange={(v) => {
+            setEmail(v);
+            updateLead(lead.id, { email: v.trim() || null });
+          }}
+          wa={wa}
+          loading={loading}
+          onRegenerate={() => generate(prefs, step, context)}
+          onSent={() => onSent?.(step === "last" ? 0 : step === "nudge" ? 5 : 7)}
+        />
       </div>
     </div>
   );

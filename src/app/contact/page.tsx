@@ -17,7 +17,7 @@ const WAYS = [
     note: "Best for account, billing and refund questions. We reply within 2 working days.",
   },
   {
-    icon: "chat" as const,
+    icon: "whatsapp" as const,
     title: "WhatsApp",
     value: CONTACT.phoneDisplay,
     href: `https://wa.me/${CONTACT.whatsapp}`,

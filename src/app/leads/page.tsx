@@ -342,10 +342,10 @@ export default function LeadsPage() {
                     href={`https://wa.me/${wa}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 text-sm font-medium text-emerald-700 hover:bg-emerald-100"
+                    className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 text-sm font-medium text-[#128C7E] hover:bg-emerald-100"
                   >
-                    <Icon name="chat" className="size-4" />
-                    Chat
+                    <Icon name="whatsapp" className="size-4" />
+                    WhatsApp
                   </a>
                 )}
                 {l.phone && (
@@ -422,6 +422,8 @@ export default function LeadsPage() {
           business={pitching}
           siteCheck={pitching.siteCheck}
           onClose={() => setPitching(null)}
+          email={pitching.email}
+          onEmailChange={(v) => updateLead(pitching.id, { email: v.trim() || null })}
           onSent={() => pitching.status === "New" && setStatus(pitching, "Contacted")}
         />
       )}

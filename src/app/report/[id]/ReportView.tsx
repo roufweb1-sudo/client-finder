@@ -105,8 +105,9 @@ export default function ReportView({ id }: { id: string }) {
               href={`https://wa.me/${wa}?text=${encodeURIComponent(reportPitch(lead, profile.name, report.score))}`}
               target="_blank"
               rel="noreferrer"
-              className="btn-shine inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+              className="btn-shine inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1DA851]"
             >
+              <Icon name="whatsapp" className="h-4 w-4" />
               WhatsApp: offer the report
             </a>
           )}

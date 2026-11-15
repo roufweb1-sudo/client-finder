@@ -30,6 +30,8 @@ export type LeadStatus = "New" | "Contacted" | "Replied" | "Won" | "Lost";
 
 export type Lead = Business & {
   status: LeadStatus;
+  /** Typed in by the user - Google Maps never gives an email address. */
+  email?: string | null;
   followUp: string | null; // YYYY-MM-DD
   notes: string;
   savedAt: string;
@@ -46,6 +48,8 @@ export type Profile = {
 };
 
 export type PitchLanguage = "english" | "malayalam" | "manglish";
+/** Where the message is going to be sent. Changes the shape, not just the wording. */
+export type PitchChannel = "whatsapp" | "email";
 export type PitchTone = "friendly" | "professional";
 export type PitchGoal = "website" | "report";
 

@@ -4,20 +4,23 @@ import Icon from "@/components/Icon";
 import Spinner from "@/components/Spinner";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ErrorNote from "@/components/ErrorNote";
+import MessageActions from "@/components/MessageActions";
 import { refreshAccount } from "@/lib/account";
 import { whatsappNumber } from "@/lib/score";
 import { authFetch, useProfile } from "@/lib/storage";
-import type { Business, PitchGoal, PitchLanguage, PitchTone, SiteCheck } from "@/lib/types";
+import type { Business, PitchChannel, PitchGoal, PitchLanguage, PitchTone, SiteCheck } from "@/lib/types";
 
 const PREFS_KEY = "cf_pitch_prefs";
 
-type Prefs = { language: PitchLanguage; tone: PitchTone; goal: PitchGoal };
+type Prefs = { language: PitchLanguage; tone: PitchTone; goal: PitchGoal; channel: PitchChannel };
+
+const DEFAULTS: Prefs = { language: "english", tone: "friendly", goal: "website", channel: "whatsapp" };
 
 function loadPrefs(): Prefs {
   try {
-    return { language: "english", tone: "friendly", goal: "website", ...JSON.parse(localStorage.getItem(PREFS_KEY) || "{}") };
+    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(PREFS_KEY) || "{}") };
   } catch {
-    return { language: "english", tone: "friendly", goal: "website" };
+    return DEFAULTS;
   }
 }
 
@@ -26,15 +29,19 @@ type Props = {
   siteCheck?: SiteCheck | null;
   onClose: () => void;
   onSent?: () => void; // e.g. mark lead as Contacted
+  /** The lead's email address, when we already have one saved. */
+  email?: string | null;
+  onEmailChange?: (email: string) => void;
 };
 
-export default function PitchModal({ business, siteCheck, onClose, onSent }: Props) {
+export default function PitchModal({ business, siteCheck, onClose, onSent, email: savedEmail, onEmailChange }: Props) {
   const profile = useProfile();
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
   const [text, setText] = useState("");
+  const [subject, setSubject] = useState("");
+  const [email, setEmail] = useState(savedEmail || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
   const started = useRef(false);
   const wa = whatsappNumber(business);
 
@@ -47,6 +54,7 @@ export default function PitchModal({ business, siteCheck, onClose, onSent }: Pro
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || "Could not write the pitch");
         setText(json.message);
+        setSubject(json.subject || "");
         void refreshAccount();
       } catch (e) {
         setError((e as Error).message);
@@ -103,6 +111,15 @@ export default function PitchModal({ business, siteCheck, onClose, onSent }: Pro
 
         <div className="mt-4 space-y-2 text-sm">
           <div className="flex flex-wrap items-center gap-2">
+            <span className="w-20 text-slate-500">Send by</span>
+            {(["whatsapp", "email"] as const).map((c) => (
+              <button key={c} disabled={loading} onClick={() => change({ channel: c })} className={`${chip(prefs.channel === c)} inline-flex items-center gap-1.5`}>
+                <Icon name={c === "whatsapp" ? "whatsapp" : "mail"} className="h-3.5 w-3.5" />
+                {c === "whatsapp" ? "WhatsApp" : "Email"}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
             <span className="w-20 text-slate-500">Language</span>
             {(["english", "malayalam", "manglish"] as const).map((l) => (
               <button key={l} disabled={loading} onClick={() => change({ language: l })} className={chip(prefs.language === l)}>
@@ -133,14 +150,14 @@ export default function PitchModal({ business, siteCheck, onClose, onSent }: Pro
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={9}
-            placeholder={loading ? "" : "Your message will appear here"}
+            placeholder={loading ? "" : prefs.channel === "email" ? "Your email will appear here" : "Your message will appear here"}
             className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm leading-relaxed outline-none focus:border-violet-400 focus:bg-white"
           />
           {loading && (
             <div className="absolute inset-0 grid place-items-center rounded-xl bg-white/75 text-sm text-slate-500 animate-fade">
               <span className="flex items-center gap-2">
                 <Spinner className="h-4 w-4 text-violet-500" />
-                Writing a pitch for {business.name}…
+                Writing {prefs.channel === "email" ? "an email" : "a pitch"} for {business.name}…
               </span>
             </div>
           )}
@@ -148,37 +165,21 @@ export default function PitchModal({ business, siteCheck, onClose, onSent }: Pro
         {error && <ErrorNote message={error} className="mt-2" />}
         <p className="mt-1 text-xs text-slate-400">You can edit the message before sending.</p>
 
-        <div className="mt-4 flex flex-wrap justify-end gap-2">
-          <button onClick={() => generate(prefs)} disabled={loading} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-2 text-sm transition-colors hover:bg-slate-50 disabled:opacity-50">
-            <Icon name="refresh" className="h-4 w-4" />
-            Try another
-          </button>
-          <button
-            onClick={async () => {
-              await navigator.clipboard.writeText(text);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 1500);
-            }}
-            disabled={!text || loading}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-50"
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-          {wa ? (
-            <a
-              href={text && !loading ? `https://wa.me/${wa}?text=${encodeURIComponent(text)}` : undefined}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => onSent?.()}
-              aria-disabled={!text || loading}
-              className={`rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 ${!text || loading ? "pointer-events-none opacity-50" : ""}`}
-            >
-              Open in WhatsApp
-            </a>
-          ) : (
-            <span className="px-2 py-2 text-xs text-slate-400">No mobile number listed: copy the message instead</span>
-          )}
-        </div>
+        <MessageActions
+          channel={prefs.channel}
+          text={text}
+          subject={subject}
+          onSubjectChange={setSubject}
+          email={email}
+          onEmailChange={(v) => {
+            setEmail(v);
+            onEmailChange?.(v);
+          }}
+          wa={wa}
+          loading={loading}
+          onRegenerate={() => generate(prefs)}
+          onSent={onSent}
+        />
       </div>
     </div>
   );
