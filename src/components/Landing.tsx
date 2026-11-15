@@ -60,15 +60,19 @@ const FAQ: { q: string; a: string }[] = [
 
 function SampleCard() {
   return (
-    <div className="animate-fade-up delay-3 rounded-2xl bg-white p-4 shadow-xl shadow-violet-900/5 ring-1 ring-slate-200">
+    <div className="animate-fade-up delay-3 min-w-0 rounded-2xl bg-white p-4 shadow-xl shadow-violet-900/10 ring-1 ring-violet-100 sm:p-5">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Example result</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-600">Example lead</p>
         <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-700 ring-1 ring-red-100">
           <Icon name="flame" className="h-3.5 w-3.5" />
           Hot 92
         </span>
       </div>
-      <h3 className="mt-3 font-semibold text-slate-900">Green Leaf Bakery</h3>
+      <div className="mt-3 flex items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 py-2.5 text-sm font-medium text-violet-900">
+        <Icon name="search" className="size-4 shrink-0 text-violet-600" />
+        Bakeries in Kochi
+      </div>
+      <h3 className="mt-4 font-semibold text-slate-900">Green Leaf Bakery</h3>
       <p className="text-sm text-slate-500">MG Road, Kochi, Kerala</p>
       <div className="mt-3 flex flex-wrap gap-2 text-xs">
         <span className="rounded bg-red-50 px-2 py-1 font-medium text-red-700">No website</span>
@@ -85,47 +89,43 @@ function SampleCard() {
         <span className="font-medium text-slate-800">Your pitch: </span>
         Hi Green Leaf Bakery team, I noticed you have 318 reviews but no website yet. A simple site with your menu and a WhatsApp order button would bring in the customers searching online…
       </div>
-      <div className="mt-3 flex gap-2">
-        <span className="btn-shine flex-1 rounded-lg bg-violet-600 px-3 py-2 text-center text-sm font-semibold text-white">Send on WhatsApp</span>
-        <span className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 ring-1 ring-slate-200">Save lead</span>
-      </div>
+
     </div>
   );
 }
 
 export default function Landing() {
   return (
-    <div className="space-y-20 pb-8">
+    <div className="space-y-14 pb-5 sm:space-y-20 sm:pb-8">
       {/* Hero */}
-      <section className="relative overflow-hidden pt-6">
+      <section className="relative overflow-hidden rounded-3xl border border-violet-100 bg-linear-to-br from-white via-white to-violet-50 px-4 py-7 sm:px-8 sm:py-10 lg:p-10">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 right-0 h-72 w-72 rounded-full bg-violet-300/30 blur-3xl"
+          className="pointer-events-none absolute top-0 right-0 size-48 rounded-full sm:size-72 bg-violet-300/30 blur-3xl"
         />
-        <div className="relative grid items-center gap-10 lg:grid-cols-2">
+        <div className="relative grid items-center gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-10">
           <div>
             <span className="animate-fade-up inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-violet-100">
               <Icon name="spark" className="h-3.5 w-3.5" />
               Built for web designers &amp; freelancers
             </span>
-            <h1 className="animate-fade-up delay-1 mt-5 text-4xl font-bold leading-[1.12] tracking-tight text-slate-900 sm:text-5xl">
+            <h1 className="animate-fade-up delay-1 mt-5 text-[clamp(1.95rem,6vw,3.25rem)] font-bold leading-[1.12] tracking-tight text-balance text-slate-900">
               Find local businesses that <span className="text-violet-600">need a website</span> — today
             </h1>
-            <p className="animate-fade-up delay-2 mt-5 max-w-xl text-lg leading-relaxed text-slate-600">
-              Stop scrolling Instagram for clients. Search any city, see which businesses have no website or a slow one, and send them a pitch that already
-              explains what is wrong.
+            <p className="animate-fade-up delay-2 mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+              Search by city and business type, see which sites need work, and draft a WhatsApp pitch based on what you find.
             </p>
-            <div className="animate-fade-up delay-3 mt-7 flex flex-wrap items-center gap-3">
+            <div className="animate-fade-up delay-3 mt-6 grid gap-3 min-[420px]:flex min-[420px]:flex-wrap">
               <Link
                 href="/login"
-                className="btn-shine inline-flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-600/20 transition-transform hover:bg-violet-700 hover:-translate-y-0.5"
+                className="btn-shine inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-violet-600 px-6 py-3 font-semibold text-white shadow-lg shadow-violet-600/20 transition-transform hover:bg-violet-700 hover:-translate-y-0.5"
               >
                 Start free
                 <Icon name="arrow" className="h-4 w-4" />
               </Link>
               <Link
                 href="#how"
-                className="inline-flex items-center gap-2 rounded-xl px-5 py-3 font-semibold text-slate-700 ring-1 ring-slate-200 transition-colors hover:bg-white"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold text-slate-700 ring-1 ring-slate-200 transition-colors hover:bg-white"
               >
                 See how it works
               </Link>
@@ -149,31 +149,17 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Why */}
-      <section className="grid gap-4 sm:grid-cols-3">
-        {[
-          { icon: "clock" as IconName, title: "Minutes, not evenings", body: "A list of real, reachable leads before your tea gets cold." },
-          { icon: "shield" as IconName, title: "A reason to call", body: "You open with a real problem on their site, so you are not just another cold message." },
-          { icon: "users" as IconName, title: "Nothing slips", body: "Every lead, note and follow-up date in one place instead of in your head." },
-        ].map((c, i) => (
-          <div key={c.title} className={`animate-fade-up delay-${i + 1} rounded-2xl bg-white p-5 ring-1 ring-slate-200`}>
-            <Icon name={c.icon} className="h-5 w-5 text-violet-600" />
-            <h3 className="mt-3 font-semibold text-slate-900">{c.title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{c.body}</p>
-          </div>
-        ))}
-      </section>
-
       {/* How it works */}
       <section id="how" className="scroll-mt-24">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Three steps to a new client</h2>
-          <p className="mt-3 text-slate-600">No training, no setup. Log in and search.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">From search to outreach</h2>
         </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-7 grid gap-4 md:grid-cols-3 md:gap-6">
           {STEPS.map((s, i) => (
-            <div key={s.title} className={`animate-fade-up delay-${i + 1} relative rounded-2xl bg-white p-6 ring-1 ring-slate-200`}>
-              <span className="absolute right-5 top-5 text-5xl font-bold leading-none text-slate-100">{i + 1}</span>
+            <div key={s.title} className={`animate-fade-up delay-${i + 1} relative rounded-2xl border border-violet-100 bg-white p-5 sm:p-6`}>
+              {i < STEPS.length - 1 && (
+                <Icon name="arrow" className="absolute -right-6 top-9 z-10 hidden size-6 rounded-full bg-violet-50 p-1 text-violet-700 md:block" />
+              )}
               <span className="grid h-11 w-11 place-items-center rounded-xl bg-violet-50 text-violet-600">
                 <Icon name={s.icon} className="h-5 w-5" />
               </span>
@@ -187,8 +173,7 @@ export default function Landing() {
       {/* Features */}
       <section>
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Everything you need to win the job</h2>
-          <p className="mt-3 text-slate-600">From the first search to the signed client.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Tools for finding and following up with leads</h2>
         </div>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f, i) => (
@@ -209,11 +194,11 @@ export default function Landing() {
       {/* Pricing */}
       <section id="pricing" className="scroll-mt-24">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">One client pays for a whole year</h2>
-          <p className="mt-3 text-slate-600">Start free. Upgrade when the leads start replying.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">Plans and monthly allowances</h2>
+          <p className="mt-3 text-slate-600">Start free and upgrade when you need more searches, website checks, or pitches.</p>
         </div>
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
-          <div className="animate-fade-up rounded-2xl bg-white p-7 ring-1 ring-slate-200">
+          <div className="animate-fade-up rounded-2xl bg-white p-5 ring-1 ring-slate-200">
             <h3 className="font-semibold text-slate-900">Free</h3>
             <p className="mt-2 text-4xl font-bold tracking-tight text-slate-900">₹0</p>
             <p className="mt-1 text-sm text-slate-500">To see if the leads are any good.</p>
@@ -239,8 +224,7 @@ export default function Landing() {
             </Link>
           </div>
 
-          <div className="animate-fade-up delay-2 relative rounded-2xl bg-slate-900 p-7 text-white ring-1 ring-slate-900">
-            <span className="absolute right-6 top-6 rounded-full bg-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-200">Most popular</span>
+          <div className="animate-fade-up delay-2 relative rounded-2xl bg-slate-900 p-5 text-white ring-1 ring-slate-900">
             <h3 className="font-semibold">Pro</h3>
             <p className="mt-2 text-4xl font-bold tracking-tight">
               {PRICES.monthly.perMonth}
@@ -302,13 +286,13 @@ export default function Landing() {
         <div aria-hidden="true" className="pointer-events-none absolute -left-16 top-0 h-56 w-56 rounded-full bg-violet-600/30 blur-3xl" />
         <div aria-hidden="true" className="pointer-events-none absolute -right-10 bottom-0 h-56 w-56 rounded-full bg-violet-500/20 blur-3xl" />
         <div className="relative">
-          <h2 className="text-3xl font-bold tracking-tight text-white">Your next client is already on Google Maps</h2>
-          <p className="mx-auto mt-3 max-w-xl text-slate-300">Make your first search in the next two minutes. It is free.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-white">Find your first lead</h2>
+          <p className="mx-auto mt-3 max-w-xl text-slate-300">Choose a city and a business type to get started.</p>
           <Link
             href="/login"
-            className="btn-shine mt-7 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-violet-900/40 transition-transform hover:bg-violet-500 hover:-translate-y-0.5"
+            className="btn-shine mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-violet-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-violet-900/40 transition-transform hover:bg-violet-500 hover:-translate-y-0.5"
           >
-            Find my first lead
+            Start free
             <Icon name="arrow" className="h-4 w-4" />
           </Link>
         </div>

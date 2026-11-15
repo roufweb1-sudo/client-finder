@@ -87,7 +87,7 @@ export default function PitchModal({ business, siteCheck, onClose, onSent }: Pro
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4 print:hidden" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl" role="dialog" aria-modal="true" aria-label={`AI pitch for ${business.name}`}>
+      <div className="max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 shadow-xl sm:p-5" role="dialog" aria-modal="true" aria-label={`AI pitch for ${business.name}`}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-violet-600">
@@ -96,7 +96,7 @@ export default function PitchModal({ business, siteCheck, onClose, onSent }: Pro
             </p>
             <h2 className="font-bold">{business.name}</h2>
           </div>
-          <button onClick={onClose} className="rounded-lg px-2 py-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Close">
+          <button onClick={onClose} className="grid size-11 shrink-0 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-700" aria-label="Close">
             <Icon name="close" className="h-4 w-4" />
           </button>
         </div>

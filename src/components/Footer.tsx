@@ -30,17 +30,17 @@ export default function Footer() {
           <h3 className="text-sm font-semibold text-slate-900">Product</h3>
           <ul className="mt-3 space-y-2 text-sm text-slate-500">
             <li>
-              <Link href="/" className="hover:text-violet-700">
+              <Link href="/" className="inline-flex min-h-9 items-center hover:text-violet-700">
                 Home
               </Link>
             </li>
             <li>
-              <Link href="/#pricing" className="hover:text-violet-700">
+              <Link href="/#pricing" className="inline-flex min-h-9 items-center hover:text-violet-700">
                 Pricing
               </Link>
             </li>
             <li>
-              <Link href="/login" className="hover:text-violet-700">
+              <Link href="/login" className="inline-flex min-h-9 items-center hover:text-violet-700">
                 Log in
               </Link>
             </li>
@@ -52,7 +52,7 @@ export default function Footer() {
           <ul className="mt-3 space-y-2 text-sm text-slate-500">
             {legal.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="hover:text-violet-700">
+                <Link href={l.href} className="inline-flex min-h-9 items-center hover:text-violet-700">
                   {l.label}
                 </Link>
               </li>
@@ -60,13 +60,13 @@ export default function Footer() {
           </ul>
           <ul className="mt-4 space-y-2 text-sm text-slate-500">
             <li>
-              <a href={`mailto:${CONTACT.email}`} className="flex items-center gap-2 hover:text-violet-700">
+              <a href={`mailto:${CONTACT.email}`} className="flex min-h-10 items-center gap-2 break-all hover:text-violet-700">
                 <Icon name="mail" className="h-4 w-4 text-violet-500" />
                 {CONTACT.email}
               </a>
             </li>
             <li>
-              <a href={`tel:${CONTACT.phoneE164}`} className="flex items-center gap-2 hover:text-violet-700">
+              <a href={`tel:${CONTACT.phoneE164}`} className="flex min-h-10 items-center gap-2 break-all hover:text-violet-700">
                 <Icon name="phone" className="h-4 w-4 text-violet-500" />
                 {CONTACT.phoneDisplay}
               </a>
@@ -80,7 +80,6 @@ export default function Footer() {
           <p>
             © {CONTACT.copyrightYear} {CONTACT.legalName}. All rights reserved.
           </p>
-          <p>{CONTACT.addressLine}</p>
         </div>
       </div>
     </footer>

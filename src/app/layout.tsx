@@ -50,7 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<div className="h-[61px] border-b border-slate-200 bg-white print:hidden" />}>
           <Nav />
         </Suspense>
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+        <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-5 sm:px-6 sm:py-7">
           <Suspense fallback={<PageLoader />}>
             <AuthGate>{children}</AuthGate>
           </Suspense>

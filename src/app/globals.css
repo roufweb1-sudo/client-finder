@@ -185,3 +185,14 @@ body {
     padding: 0 !important;
   }
 }
+
+@keyframes cf-menu-enter {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-navigation[open] {
+    animation: cf-menu-enter 220ms ease-out;
+  }
+}

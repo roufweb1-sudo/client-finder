@@ -10,6 +10,7 @@ export type IconName =
   | "phone"
   | "star"
   | "check"
+  | "menu"
   | "close"
   | "arrow"
   | "refresh"
@@ -46,6 +47,7 @@ const PATHS: Record<IconName, React.ReactNode> = {
   phone: <path d="M6.5 3.5h3l1.5 4-2 1.4a12 12 0 0 0 6.1 6.1l1.4-2 4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2z" />,
   star: <path d="m12 4 2.5 5.2 5.5.8-4 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4-3.9 5.5-.8z" />,
   check: <path d="m4.5 12.5 5 5 10-11" />,
+  menu: <path d="M4 6h16M4 12h16M4 18h16" />,
   close: (
     <>
       <path d="m6 6 12 12" />
