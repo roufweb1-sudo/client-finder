@@ -5,6 +5,7 @@ import { CONTACT } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Terms of service",
   description: "The rules for using AI Client Finder.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

@@ -6,6 +6,7 @@ import { CONTACT } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Refund & cancellation policy",
   description: "When AI Client Finder gives a refund, how to ask for one, and how long it takes.",
+  alternates: { canonical: "/refund" },
 };
 
 export default function RefundPage() {

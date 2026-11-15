@@ -5,6 +5,7 @@ import { CONTACT } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact us",
   description: `Talk to the team behind AI Client Finder. Email ${CONTACT.email} or call ${CONTACT.phoneDisplay}.`,
+  alternates: { canonical: "/contact" },
 };
 
 const WAYS = [

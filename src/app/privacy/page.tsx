@@ -5,6 +5,7 @@ import { CONTACT } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Privacy policy",
   description: "What AI Client Finder stores about you, who we share it with, and how to have it deleted.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

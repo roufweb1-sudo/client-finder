@@ -25,6 +25,15 @@ export const metadata: Metadata = {
   description:
     "Search any city for businesses with no website or a slow one, score the hottest leads, and send an AI-written pitch on WhatsApp. Built for web freelancers.",
   applicationName: CONTACT.brand,
+  alternates: { canonical: "/" },
+  keywords: [
+    "find website clients",
+    "leads for web designers",
+    "businesses without a website",
+    "freelance web design leads",
+    "cold outreach WhatsApp",
+    "local business leads India",
+  ],
   icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }], apple: "/icon.svg" },
   openGraph: {
     type: "website",
@@ -32,7 +41,52 @@ export const metadata: Metadata = {
     siteName: CONTACT.brand,
     title: "AI Client Finder – find local businesses that need a website",
     description: "Find leads, check their websites, and pitch them on WhatsApp in minutes.",
+    locale: "en_IN",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Client Finder – find local businesses that need a website",
+    description: "Find leads, check their websites, and pitch them on WhatsApp in minutes.",
+  },
+};
+
+/** Tells Google what this site is, so it can show richer search results. */
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${CONTACT.site}/#organization`,
+      name: CONTACT.legalName,
+      url: CONTACT.site,
+      logo: `${CONTACT.site}/icon.svg`,
+      email: CONTACT.email,
+      telephone: CONTACT.phoneE164,
+      address: { "@type": "PostalAddress", addressLocality: "Areekode", addressRegion: "Kerala", postalCode: "673639", addressCountry: "IN" },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${CONTACT.site}/#website`,
+      url: CONTACT.site,
+      name: CONTACT.brand,
+      publisher: { "@id": `${CONTACT.site}/#organization` },
+      inLanguage: "en",
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: CONTACT.brand,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web browser",
+      url: CONTACT.site,
+      description:
+        "Find local businesses with no website or a slow one, score them as leads, and send an AI-written pitch on WhatsApp.",
+      offers: [
+        { "@type": "Offer", name: "Free", price: "0", priceCurrency: "INR" },
+        { "@type": "Offer", name: "Pro monthly", price: "299", priceCurrency: "INR" },
+        { "@type": "Offer", name: "Pro yearly", price: "1999", priceCurrency: "INR" },
+      ],
+    },
+  ],
 };
 
 export const viewport: Viewport = {
@@ -47,6 +101,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
       </head>
       <body className="flex min-h-full flex-col bg-slate-50 font-sans text-slate-900">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <Suspense fallback={<div className="h-[61px] border-b border-slate-200 bg-white print:hidden" />}>
           <Nav />
         </Suspense>
