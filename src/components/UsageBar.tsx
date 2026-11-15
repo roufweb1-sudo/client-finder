@@ -1,4 +1,4 @@
-import { KIND_LABEL, type UsageKind } from "@/lib/plans";
+import { KIND_LABEL, LEADS_PER_SEARCH, type UsageKind } from "@/lib/plans";
 
 /** One month's usage for a single allowance, shown as a filled bar. */
 export default function UsageBar({ kind, used, limit }: { kind: UsageKind; used: number; limit: number }) {
@@ -15,6 +15,11 @@ export default function UsageBar({ kind, used, limit }: { kind: UsageKind; used:
       <div className="mt-1 h-2 rounded-full bg-slate-100">
         <div className={`h-2 rounded-full transition-[width] duration-500 ${color}`} style={{ width: `${pct}%` }} />
       </div>
+      {kind === "searches" && (
+        <p className="mt-1 text-xs text-slate-400">
+          {((limit - used) * LEADS_PER_SEARCH).toLocaleString("en-IN")} more leads available — each search brings up to {LEADS_PER_SEARCH}
+        </p>
+      )}
     </div>
   );
 }

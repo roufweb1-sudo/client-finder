@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Icon, { type IconName } from "@/components/Icon";
-import { KIND_LABEL, LIMITS, PRICES } from "@/lib/plans";
+import { LIMITS, PRICES, leadsPerMonth, planLines } from "@/lib/plans";
 
 const STEPS: { icon: IconName; title: string; body: string }[] = [
   {
@@ -39,7 +39,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Do I need to pay to try it?",
-    a: `No. A free account gives you ${LIMITS.free.searches} searches, ${LIMITS.free.pitches} AI pitches and ${LIMITS.free.checks} website checks every month. No card is asked for.`,
+    a: `No. A free account turns up to ${leadsPerMonth("free")} leads a month, with ${LIMITS.free.pitches} AI pitches. No card is asked for.`,
   },
   {
     q: "Does it send the WhatsApp messages for me?",
@@ -236,18 +236,12 @@ export default function Landing() {
             <p className="mt-2 text-4xl font-bold tracking-tight text-slate-900">₹0</p>
             <p className="mt-1 text-sm text-slate-500">To see if the leads are any good.</p>
             <ul className="mt-6 space-y-3 text-sm text-slate-600">
-              {(Object.keys(LIMITS.free) as (keyof typeof LIMITS.free)[]).map((k) => (
-                <li key={k} className="flex items-start gap-2.5">
+              {planLines("free").map((line) => (
+                <li key={line} className="flex items-start gap-2.5">
                   <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
-                  <span>
-                    {LIMITS.free[k]} {KIND_LABEL[k].toLowerCase()} a month
-                  </span>
+                  <span>{line}</span>
                 </li>
               ))}
-              <li className="flex items-start gap-2.5">
-                <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
-                <span>Lead tracker and CSV export</span>
-              </li>
             </ul>
             <Link
               href="/login"
@@ -267,17 +261,15 @@ export default function Landing() {
               or {PRICES.yearly.label} — about {PRICES.yearly.perMonth} a month
             </p>
             <ul className="mt-6 space-y-3 text-sm text-slate-300">
-              {(Object.keys(LIMITS.pro) as (keyof typeof LIMITS.pro)[]).map((k) => (
-                <li key={k} className="flex items-start gap-2.5">
+              {planLines("pro").map((line) => (
+                <li key={line} className="flex items-start gap-2.5">
                   <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-violet-400" />
-                  <span>
-                    {LIMITS.pro[k].toLocaleString("en-IN")} {KIND_LABEL[k].toLowerCase()} a month
-                  </span>
+                  <span>{line}</span>
                 </li>
               ))}
               <li className="flex items-start gap-2.5">
                 <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-violet-400" />
-                <span>Branded audit reports with your logo</span>
+                <span>Lead tracker, CRM and CSV export</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-violet-400" />

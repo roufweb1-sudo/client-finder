@@ -1,3 +1,4 @@
+import { readCache, writeCache } from "@/lib/searchCache";
 import { consume, refund } from "@/lib/server";
 import { userFromRequest } from "@/lib/supabase";
 import type { Business, WebsiteStatus } from "@/lib/types";
@@ -18,10 +19,6 @@ const FIELD_MASK = [
 ].join(",");
 
 const SOCIAL_HOSTS = ["instagram.com", "facebook.com", "fb.com", "wa.me", "whatsapp.com", "linktr.ee", "youtube.com", "justdial.com"];
-
-// Simple in-memory cache so repeated searches don't cost money again (resets when the server restarts).
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const cache = new Map<string, { at: number; data: unknown }>();
 
 function websiteStatus(url?: string): WebsiteStatus {
   if (!url) return "none";
@@ -63,10 +60,8 @@ export async function POST(request: Request) {
   }
 
   const cacheKey = `${query.toLowerCase()}|${body.pageToken || ""}`;
-  const hit = cache.get(cacheKey);
-  if (hit && Date.now() - hit.at < CACHE_TTL_MS) {
-    return Response.json({ ...(hit.data as object), cached: true });
-  }
+  const hit = await readCache(cacheKey);
+  if (hit) return Response.json({ ...(hit as object), cached: true });
 
   // Counts toward the monthly plan limit (cached results above are free)
   const blocked = await consume(userId, "searches");
@@ -111,6 +106,6 @@ export async function POST(request: Request) {
     }));
 
   const data = { businesses, nextPageToken: json.nextPageToken || null };
-  cache.set(cacheKey, { at: Date.now(), data });
+  await writeCache(cacheKey, data);
   return Response.json(data);
 }

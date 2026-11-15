@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import ErrorNote from "@/components/ErrorNote";
 import UsageBar from "@/components/UsageBar";
 import { refreshAccount, useAccount } from "@/lib/account";
-import { KIND_LABEL, LIMITS, PRICES, type Period, type UsageKind } from "@/lib/plans";
+import { KIND_LABEL, PRICES, planLines, type Period, type UsageKind } from "@/lib/plans";
 import { authFetch, useAuth } from "@/lib/storage";
 
 type RazorpayResponse = { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string };
@@ -27,7 +27,7 @@ function loadRazorpay(): Promise<boolean> {
   });
 }
 
-const FEATURES = ["Hot-lead score & website checks", "Branded audit PDF reports", "AI pitches in English, മലയാളം & Manglish", "Lead tracker, follow-ups & CSV export"];
+const FEATURES = ["Hot-lead score & website checks", "Branded audit PDF reports", "AI pitches in English, മലയാളം & Manglish", "WhatsApp and email outreach"];
 
 
 /** One feature line with our check icon. */
@@ -137,10 +137,9 @@ export default function PlansPage() {
           <p className="mt-2 text-3xl font-bold">₹0</p>
           <p className="text-sm text-slate-500">to try it out</p>
           <ul className="mt-5 space-y-2 text-sm text-slate-700">
-            <Tick>{LIMITS.free.searches} lead searches / month ({LIMITS.free.searches * 20} leads)</Tick>
-            <Tick>{LIMITS.free.pitches} AI pitches / month</Tick>
-            <Tick>{LIMITS.free.checks} website checks / month</Tick>
-            {FEATURES.slice(1, 2).map((f) => <Tick key={f}>{f}</Tick>)}
+            {planLines("free").map((f) => (
+              <Tick key={f}>{f}</Tick>
+            ))}
           </ul>
           <p className="mt-6 rounded-lg bg-slate-50 py-2 text-center text-sm text-slate-500">{isPro ? "—" : "Your current plan"}</p>
         </div>
@@ -158,12 +157,12 @@ export default function PlansPage() {
               </p>
               <p className="text-sm text-slate-500">{best ? `just ${p.perMonth}/month` : "cancel anytime: no auto-debit"}</p>
               <ul className="mt-5 space-y-2 text-sm text-slate-700">
-                <Tick>
-                  {LIMITS.pro.searches} lead searches / month (<b>{LIMITS.pro.searches * 20} leads</b>)
-                </Tick>
-                <Tick>{LIMITS.pro.pitches} AI pitches / month</Tick>
-                <Tick>{LIMITS.pro.checks.toLocaleString("en-IN")} website checks / month</Tick>
-                {FEATURES.map((f) => <Tick key={f}>{f}</Tick>)}
+                {planLines("pro").map((f) => (
+                  <Tick key={f}>{f}</Tick>
+                ))}
+                {FEATURES.map((f) => (
+                  <Tick key={f}>{f}</Tick>
+                ))}
               </ul>
               <button
                 onClick={() => buy(period)}
