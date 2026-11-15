@@ -1,25 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import BrandingForm from "@/components/BrandingForm";
+import EmailConnect from "@/components/EmailConnect";
 import Icon, { type IconName } from "@/components/Icon";
 import UsageBar from "@/components/UsageBar";
 import { useAccount } from "@/lib/account";
 import { KIND_LABEL, type UsageKind } from "@/lib/plans";
 import { signOut, useAuth, useLeads, useLeadsLoaded, useProfile } from "@/lib/storage";
 
-type Tab = "branding" | "plan" | "account";
+type Tab = "branding" | "email" | "plan" | "account";
 
 const TABS: { id: Tab; label: string; icon: IconName; blurb: string }[] = [
   { id: "branding", label: "My branding", icon: "sliders", blurb: "Your name, logo and contact details on every pitch and report." },
+  { id: "email", label: "Email", icon: "mail", blurb: "Connect the mailbox your email pitches are sent from." },
   { id: "plan", label: "Plan & usage", icon: "crown", blurb: "What you are on, and how much of this month you have used." },
   { id: "account", label: "My account", icon: "lock", blurb: "The email you sign in with." },
 ];
 
 export default function SettingsPage() {
-  const [tab, setTab] = useState<Tab>("branding");
+  return (
+    <Suspense fallback={<p className="py-20 text-center text-slate-400">Loading…</p>}>
+      <Settings />
+    </Suspense>
+  );
+}
+
+function Settings() {
+  const params = useSearchParams();
+  const emailResult = params.get("email");
+  const [tab, setTab] = useState<Tab>(emailResult ? "email" : "branding");
   const profile = useProfile();
   const loaded = useLeadsLoaded(); // branding loads together with leads
   const current = TABS.find((t) => t.id === tab) ?? TABS[0];
@@ -52,6 +64,7 @@ export default function SettingsPage() {
 
         <div className="mt-4 lg:mt-0">
           {tab === "branding" && (loaded ? <BrandingForm saved={profile} /> : <p className="py-16 text-center text-slate-400">Loading your branding…</p>)}
+          {tab === "email" && <EmailConnect result={emailResult} />}
           {tab === "plan" && <PlanPanel />}
           {tab === "account" && <AccountPanel />}
         </div>

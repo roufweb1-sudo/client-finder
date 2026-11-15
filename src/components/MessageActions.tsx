@@ -1,9 +1,13 @@
 "use client";
 
+import ErrorNote from "@/components/ErrorNote";
 import Icon from "@/components/Icon";
+import Spinner from "@/components/Spinner";
+import { refreshEmailStatus, useEmailStatus } from "@/lib/emailAccount";
 import { gmailLink, looksLikeEmail, mailtoLink, waLink } from "@/lib/send";
+import { authFetch, useProfile } from "@/lib/storage";
 import type { PitchChannel } from "@/lib/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   channel: PitchChannel;
@@ -23,9 +27,34 @@ type Props = {
 
 export default function MessageActions({ channel, text, subject, onSubjectChange, email, onEmailChange, wa, loading, onRegenerate, onSent }: Props) {
   const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const mailbox = useEmailStatus();
+  const profile = useProfile();
   const ready = !!text && !loading;
   const to = email.trim();
   const canMail = ready && looksLikeEmail(to);
+
+  useEffect(() => {
+    if (channel === "email") void refreshEmailStatus();
+  }, [channel]);
+
+  async function sendNow() {
+    setSending(true);
+    setSendError(null);
+    try {
+      const res = await authFetch("/api/email/send", { to, subject, message: text, profile });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Couldn't send");
+      setSentTo(json.from || to);
+      onSent?.();
+    } catch (e) {
+      setSendError((e as Error).message);
+    } finally {
+      setSending(false);
+    }
+  }
 
   async function copy() {
     await navigator.clipboard.writeText(channel === "email" && subject ? `Subject: ${subject}\n\n${text}` : text);
@@ -84,17 +113,28 @@ export default function MessageActions({ channel, text, subject, onSubjectChange
               <Icon name="mail" className="h-4 w-4" />
               Mail app
             </a>
-            <a
-              href={canMail ? gmailLink(to, subject, text) : undefined}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => onSent?.()}
-              aria-disabled={!canMail}
-              className={`btn-shine inline-flex min-h-11 items-center gap-2 rounded-lg bg-violet-600 px-4 text-sm font-semibold text-white hover:bg-violet-700 ${canMail ? "" : "pointer-events-none opacity-50"}`}
-            >
-              <Icon name="mail" className="h-4 w-4" />
-              Open in Gmail
-            </a>
+            {mailbox?.connected ? (
+              <button
+                onClick={sendNow}
+                disabled={!canMail || sending || !!sentTo}
+                className="btn-shine inline-flex min-h-11 items-center gap-2 rounded-lg bg-violet-600 px-4 text-sm font-semibold text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {sending ? <Spinner className="h-4 w-4" /> : <Icon name={sentTo ? "check" : "mail"} className="h-4 w-4" />}
+                {sentTo ? "Sent" : sending ? "Sending…" : "Send now"}
+              </button>
+            ) : (
+              <a
+                href={canMail ? gmailLink(to, subject, text) : undefined}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => onSent?.()}
+                aria-disabled={!canMail}
+                className={`btn-shine inline-flex min-h-11 items-center gap-2 rounded-lg bg-violet-600 px-4 text-sm font-semibold text-white hover:bg-violet-700 ${canMail ? "" : "pointer-events-none opacity-50"}`}
+              >
+                <Icon name="mail" className="h-4 w-4" />
+                Open in Gmail
+              </a>
+            )}
           </>
         ) : wa ? (
           <a
@@ -113,8 +153,13 @@ export default function MessageActions({ channel, text, subject, onSubjectChange
         )}
       </div>
 
-      {channel === "email" && !canMail && ready && (
-        <p className="mt-2 text-right text-xs text-slate-400">Add their email address to enable sending.</p>
+      {channel === "email" && sendError && <ErrorNote message={sendError} className="mt-2" />}
+      {channel === "email" && sentTo && <p className="mt-2 text-right text-xs text-emerald-600">Sent from {sentTo}.</p>}
+      {channel === "email" && !canMail && ready && <p className="mt-2 text-right text-xs text-slate-400">Add their email address to enable sending.</p>}
+      {channel === "email" && canMail && mailbox && !mailbox.connected && (
+        <p className="mt-2 text-right text-xs text-slate-400">
+          Connect your mailbox under Settings → Email to send in one click.
+        </p>
       )}
     </>
   );
