@@ -7,6 +7,7 @@ import type { SVGProps } from "react";
 export type IconName =
   | "crown"
   | "logout"
+  | "whatsapp"
   | "search"
   | "spark"
   | "phone"
@@ -34,6 +35,12 @@ export type IconName =
   | "link";
 
 const PATHS: Record<IconName, React.ReactNode> = {
+  whatsapp: (
+    <>
+      <path d="M20 4a10 10 0 0 0-15.7 12L3 21l5-1.3A10 10 0 0 0 20 4Z" />
+      <path fill="currentColor" stroke="none" d="M9.2 7.2h.6c.3 0 .5.1.6.4l1 2.2c.1.2.1.4-.1.6l-.8.9c-.1.1-.1.3 0 .4.7 1.2 1.7 2.2 3 2.7.2.1.3.1.5-.1l1-1.2c.2-.2.4-.2.6-.1l2.1 1c.3.2.5.3.5.5 0 .7-.4 1.6-1 2s-1.2.5-2 .4c-1.4-.2-3.5-1.2-5.1-2.7-1.4-1.3-2.6-3.2-2.6-4.6 0-1.1.4-1.7.8-2.1.3-.2.6-.3.9-.3Z" />
+    </>
+  ),
   crown: <path d="M3 6l4.5 4L12 4l4.5 6L21 6l-2 12H5L3 6zM5 21h14" />,
   logout: <path d="M11 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h6m-2-8h12m-4-4 4 4-4 4" />,
   search: (

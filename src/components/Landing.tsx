@@ -13,11 +13,11 @@ const STEPS: { icon: IconName; title: string; body: string }[] = [
   },
   {
     icon: "chart",
-    title: "See who needs you",
+    title: "Prioritize the best leads",
     body: "Every lead gets a score. No website, social page only, site not loading or slow on mobile — the hottest ones rise to the top.",
   },
   {
-    icon: "chat",
+    icon: "whatsapp",
     title: "Pitch on WhatsApp",
     body: "Open a written-for-you message in English, Malayalam or Manglish, edit a line if you like, and send it straight to the owner.",
   },
@@ -26,9 +26,9 @@ const STEPS: { icon: IconName; title: string; body: string }[] = [
 const FEATURES: { icon: IconName; title: string; body: string }[] = [
   { icon: "bolt", title: "Real website checks", body: "We open each site and run Google's mobile speed test, then list the exact problems you can fix." },
   { icon: "doc", title: "Branded audit report", body: "A clean one-page report with your name, logo and phone number on it. Print it or save it as a PDF." },
-  { icon: "spark", title: "AI pitch writer", body: "Pitches that mention the real problem on that business's site, not a copy-paste template." },
+  { icon: "whatsapp", title: "AI WhatsApp pitches", body: "Pitches that mention the real problem on that business's site, not a copy-paste template." },
   { icon: "globe", title: "Three languages", body: "English, മലയാളം and Manglish, in a friendly or a professional tone." },
-  { icon: "sliders", title: "Lead tracker", body: "Move leads through new, contacted, replied and won. Set a follow-up date so nothing is forgotten." },
+  { icon: "users", title: "Lead tracker", body: "Move leads through new, contacted, replied and won. Set a follow-up date so nothing is forgotten." },
   { icon: "download", title: "Export anytime", body: "Your leads are yours. Download the whole list as a CSV whenever you want." },
 ];
 
@@ -95,7 +95,7 @@ function SampleCard() {
         </span>
       </div>
       <div className="mt-4 rounded-xl bg-slate-50 p-3 text-sm leading-relaxed text-slate-600 ring-1 ring-slate-100">
-        <span className="font-medium text-slate-800">Your pitch: </span>
+        <span className="mb-1 flex items-center gap-2 font-semibold text-slate-800"><Icon name="whatsapp" className="size-5 text-[#128C7E]" /> Example WhatsApp pitch</span>
         Hi Green Leaf Bakery team, I noticed you have 318 reviews but no website yet. A simple site with your menu and a WhatsApp order button would bring in the customers searching online…
       </div>
 
@@ -107,22 +107,22 @@ export default function Landing() {
   return (
     <div className="space-y-14 pb-5 sm:space-y-20 sm:pb-8">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl border border-violet-100 bg-linear-to-br from-white via-white to-violet-50 px-4 py-7 sm:px-8 sm:py-10 lg:p-10">
+      <section className="relative overflow-hidden rounded-3xl border border-violet-200 bg-linear-to-br from-white via-violet-50/60 to-violet-100 px-5 py-8 sm:px-8 sm:py-10 lg:p-12">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute top-0 right-0 size-48 rounded-full sm:size-72 bg-violet-300/30 blur-3xl"
         />
-        <div className="relative grid items-center gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-10">
+        <div className="relative grid items-center gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:gap-12">
           <div>
-            <span className="animate-fade-up inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-violet-100">
+            <span className="animate-fade-up inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-violet-800 ring-1 ring-violet-200">
               <Icon name="spark" className="h-3.5 w-3.5" />
               Built for freelance website developers
             </span>
-            <h1 className="animate-fade-up delay-1 mt-5 text-[clamp(1.95rem,6vw,3.25rem)] font-bold leading-[1.12] tracking-tight text-balance text-slate-900">
+            <h1 className="animate-fade-up delay-1 mt-5 text-[clamp(2rem,5.5vw,3.65rem)] font-bold leading-[1.08] tracking-tight text-balance text-slate-900">
               Find local businesses that <span className="text-violet-600">need a website</span> — today
             </h1>
             <p className="animate-fade-up delay-2 mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
-              Find local businesses that need a new or better website. See what you can improve and draft a WhatsApp pitch around it.
+              Find businesses near you, see where their websites fall short, and turn those findings into a personal WhatsApp pitch.
             </p>
             <div className="animate-fade-up delay-3 mt-6 grid gap-3 min-[420px]:flex min-[420px]:flex-wrap">
               <Link
@@ -139,14 +139,10 @@ export default function Landing() {
                 See how it works
               </Link>
             </div>
-            <p className="animate-fade-up delay-4 mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500">
+            <p className="animate-fade-up delay-4 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-slate-700 sm:text-sm">
               <span className="inline-flex items-center gap-1.5">
                 <Icon name="check" className="h-4 w-4 text-violet-600" />
                 No card needed
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Icon name="check" className="h-4 w-4 text-violet-600" />
-                {LIMITS.free.searches} free searches a month
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Icon name="check" className="h-4 w-4 text-violet-600" />
@@ -154,15 +150,24 @@ export default function Landing() {
               </span>
             </p>
           </div>
-          <div className="relative isolate min-w-0 overflow-hidden rounded-2xl bg-violet-100 shadow-xl shadow-violet-900/15 ring-1 ring-violet-200">
+          <div className="relative isolate min-w-0 overflow-hidden rounded-2xl bg-violet-100 shadow-xl shadow-violet-900/20 ring-1 ring-violet-300">
             <Image
               src="/freelance-developer.webp"
               alt="Freelance website developer working at a laptop"
               width={1200}
               height={800}
               sizes="(min-width: 1024px) 480px, (min-width: 640px) 85vw, 92vw"
-              className="aspect-[3/2] w-full object-cover"
+              className="aspect-[4/3] w-full object-cover sm:aspect-[3/2] lg:aspect-[4/3]"
             />
+            <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-violet-950/95 to-transparent p-4 pt-12 sm:p-6 sm:pt-16">
+              <p className="flex items-center gap-2 text-xs font-semibold text-white sm:text-sm">
+                <Icon name="search" className="size-4 shrink-0 text-violet-200" />
+                Search local businesses
+                <Icon name="arrow" className="size-4 shrink-0 text-violet-200" />
+                <Icon name="whatsapp" className="size-5 shrink-0 text-white" />
+                Pitch on WhatsApp
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -174,12 +179,12 @@ export default function Landing() {
         </div>
         <div className="mt-7 grid gap-4 md:grid-cols-3 md:gap-6">
           {STEPS.map((s, i) => (
-            <div key={s.title} className={`animate-fade-up delay-${i + 1} relative rounded-2xl border border-violet-100 bg-white p-5 sm:p-6`}>
+            <div key={s.title} className={`animate-fade-up delay-${i + 1} relative rounded-2xl border border-violet-100 bg-linear-to-b from-violet-50/80 to-white p-5 shadow-sm shadow-violet-900/5 sm:p-6`}>
               {i < STEPS.length - 1 && (
                 <Icon name="arrow" className="absolute -right-6 top-9 z-10 hidden size-6 rounded-full bg-violet-50 p-1 text-violet-700 md:block" />
               )}
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-violet-50 text-violet-600">
-                <Icon name={s.icon} className="h-5 w-5" />
+              <span className={s.icon === "whatsapp" ? "grid size-12 place-items-center rounded-2xl bg-[#E6F8EF] text-[#128C7E]" : "grid size-12 place-items-center rounded-2xl bg-violet-600 text-white shadow-sm shadow-violet-900/20"}>
+                <Icon name={s.icon} className="size-6" />
               </span>
               <h3 className="mt-4 text-lg font-semibold text-slate-900">{s.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">{s.body}</p>
@@ -207,10 +212,10 @@ export default function Landing() {
           {FEATURES.map((f, i) => (
             <div
               key={f.title}
-              className={`animate-fade-up delay-${(i % 3) + 1} group rounded-2xl bg-white p-6 ring-1 ring-slate-200 transition-shadow hover:shadow-lg hover:shadow-violet-900/5`}
+              className={`animate-fade-up delay-${(i % 3) + 1} rounded-2xl border border-violet-100 bg-white p-5 shadow-sm shadow-violet-900/5 transition-shadow hover:shadow-md sm:p-6`}
             >
-              <span className="grid h-10 w-10 place-items-center rounded-lg bg-violet-50 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white">
-                <Icon name={f.icon} className="h-5 w-5" />
+              <span className={f.icon === "whatsapp" ? "grid size-11 place-items-center rounded-xl bg-[#E6F8EF] text-[#128C7E]" : "grid size-11 place-items-center rounded-xl bg-violet-100 text-violet-700"}>
+                <Icon name={f.icon} className="size-5" />
               </span>
               <h3 className="mt-4 font-semibold text-slate-900">{f.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-600">{f.body}</p>
