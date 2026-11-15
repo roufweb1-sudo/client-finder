@@ -97,7 +97,7 @@ export function startAuth() {
   sb.auth.onAuthStateChange((event, session) => {
     const userChanged = session?.user.id !== state.session?.user.id;
     set({ session, ready: true });
-    if (!session) set({ leads: EMPTY_LEADS, leadsLoaded: false, profile: EMPTY_PROFILE });
+    if (!session) set({ leads: EMPTY_LEADS, leadsLoaded: false, profile: EMPTY_PROFILE, error: null });
     else if (userChanged || event === "SIGNED_IN") loadData();
   });
 }
@@ -109,7 +109,8 @@ export function useAuth() {
 }
 
 export async function signOut() {
-  await supabase().auth.signOut();
+  const { error } = await supabase().auth.signOut({ scope: "local" });
+  if (error) throw error;
 }
 
 /** fetch() for our own API routes, with the user's login token attached. */
@@ -126,19 +127,24 @@ export async function authFetch(url: string, body: unknown): Promise<Response> {
 
 let loading = false;
 async function loadData() {
-  if (loading) return;
+  const userId = state.session?.user.id;
+  if (loading || !userId) return;
   loading = true;
   const sb = supabase();
   const [leadsRes, profileRes] = await Promise.all([
     sb.from("leads").select("place_id,business,site_check,status,follow_up,notes,search_query,created_at").order("created_at", { ascending: false }),
     sb.from("profiles").select("name,brand,phone,email,logo").maybeSingle(),
   ]);
+  loading = false;
+  if (state.session?.user.id !== userId) {
+    if (state.session) void loadData();
+    return;
+  }
   report(leadsRes.error);
   report(profileRes.error);
   const leads = ((leadsRes.data as Row[] | null) ?? []).map(rowToLead);
   const profile = profileRes.data ? { ...EMPTY_PROFILE, ...(profileRes.data as Profile) } : EMPTY_PROFILE;
   set({ leads, profile, leadsLoaded: true });
-  loading = false;
   await importFromVersion1(leads.length === 0, !profileRes.data);
 }
 

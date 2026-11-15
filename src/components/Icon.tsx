@@ -5,6 +5,8 @@ import type { SVGProps } from "react";
  * We use these instead of emojis so every screen looks like one brand.
  */
 export type IconName =
+  | "crown"
+  | "logout"
   | "search"
   | "spark"
   | "phone"
@@ -32,6 +34,8 @@ export type IconName =
   | "link";
 
 const PATHS: Record<IconName, React.ReactNode> = {
+  crown: <path d="M3 6l4.5 4L12 4l4.5 6L21 6l-2 12H5L3 6zM5 21h14" />,
+  logout: <path d="M11 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h6m-2-8h12m-4-4 4 4-4 4" />,
   search: (
     <>
       <circle cx="11" cy="11" r="7" />

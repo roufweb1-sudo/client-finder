@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Icon, { type IconName } from "@/components/Icon";
 import Logo from "@/components/Logo";
@@ -10,12 +10,15 @@ import { signOut, useAuth, useLeads } from "@/lib/storage";
 
 export default function Nav() {
   const path = usePathname();
+  const router = useRouter();
   const count = useLeads().length;
   const { session } = useAuth();
   const account = useAccount();
   const userId = session?.user.id;
   const drawer = useRef<HTMLDialogElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState(false);
 
   useEffect(() => {
     if (userId) void refreshAccount();
@@ -46,13 +49,27 @@ export default function Nav() {
     drawer.current?.close();
   }
 
+  async function handleLogout() {
+    setLoggingOut(true);
+    setLogoutError(false);
+    try {
+      await signOut();
+      closeMenu();
+      router.replace("/login");
+    } catch {
+      setLogoutError(true);
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
   const items: { href: string; label: string; icon: IconName; count?: number }[] = session
     ? [
         { href: "/", label: "Find leads", icon: "search" },
         { href: "/leads", label: "My leads", icon: "users", count },
         { href: "/settings", label: "My branding", icon: "sliders" },
         ...(account?.isAdmin ? [{ href: "/admin", label: "Admin", icon: "shield" as const }] : []),
-        { href: "/plans", icon: "spark", label: account?.plan === "pro" ? "Pro plan" : "Upgrade to Pro" },
+        { href: "/plans", icon: "crown", label: account?.plan === "pro" ? "Pro plan" : "Upgrade to Pro" },
       ]
     : [
         { href: "/#pricing", label: "Pricing", icon: "card" },
@@ -71,10 +88,12 @@ export default function Nav() {
             onClick={mobile ? closeMenu : undefined}
             aria-current={path === href ? "page" : undefined}
             className={"flex items-center gap-2 rounded-xl text-sm font-medium transition-colors " + linkStyle + " " + (
-              path === href ? "bg-violet-50 text-violet-700" : "text-slate-700 hover:bg-slate-100"
+              href === "/admin"
+                ? path === href ? "bg-violet-700 text-white" : "bg-violet-100 text-violet-800 hover:bg-violet-200"
+                : path === href ? "bg-violet-50 text-violet-700" : "text-slate-700 hover:bg-slate-100"
             )}
           >
-            <Icon name={icon} className="size-4 shrink-0 text-violet-600" />
+            <Icon name={icon} className={"size-4 shrink-0 " + (href === "/admin" && path === href ? "text-white" : "text-violet-600")} />
             <span>{label}</span>
             {count !== undefined && (
               <span className={`inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-violet-100 px-1.5 text-xs font-semibold tabular-nums text-violet-800 ${mobile ? "ml-auto" : ""}`}>
@@ -84,25 +103,30 @@ export default function Nav() {
           </Link>
         ))}
         {session ? (
-          <button
-            type="button"
-            onClick={() => {
-              closeMenu();
-              void signOut();
-            }}
-            className={"flex items-center gap-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100 " + linkStyle}
-          >
-            <Icon name="arrow" className="size-4 shrink-0 text-violet-600" />
-            <span className={mobile ? undefined : "sr-only"}>Log out</span>
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className={"flex w-full items-center gap-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-60 " + linkStyle}
+            >
+              <Icon name="logout" className="size-4 shrink-0 text-violet-600" />
+              {loggingOut ? "Logging out..." : "Log out"}
+            </button>
+            {logoutError && (
+              <p role="alert" className="mt-1 rounded-lg border border-rose-200 bg-white p-2 text-xs text-rose-700 lg:absolute lg:right-0 lg:w-44 lg:shadow-sm">
+                Couldn&apos;t log out. Try again.
+              </p>
+            )}
+          </div>
         ) : (
           <Link
             href="/login"
             onClick={mobile ? closeMenu : undefined}
-            className={"flex items-center justify-center gap-2 rounded-xl bg-violet-600 text-sm font-semibold text-white hover:bg-violet-700 " + linkStyle}
+            className={"btn-shine flex items-center justify-center gap-2 rounded-xl bg-violet-600 text-sm font-semibold text-white hover:bg-violet-700 " + linkStyle}
           >
-            <Icon name="arrow" className="size-4 shrink-0" />
             Start free
+            <Icon name="arrow" className="size-4 shrink-0" />
           </Link>
         )}
       </nav>

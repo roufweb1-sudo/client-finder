@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import Icon, { type IconName } from "@/components/Icon";
 import { KIND_LABEL, LIMITS, PRICES } from "@/lib/plans";
@@ -68,6 +69,14 @@ function SampleCard() {
           Hot 92
         </span>
       </div>
+      <Image
+        src="/example-bakery.webp"
+        alt=""
+        width={800}
+        height={360}
+        sizes="(min-width: 1024px) 475px, 85vw"
+        className="mt-3 aspect-[20/9] w-full rounded-xl object-cover"
+      />
       <div className="mt-3 flex items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 py-2.5 text-sm font-medium text-violet-900">
         <Icon name="search" className="size-4 shrink-0 text-violet-600" />
         Bakeries in Kochi
@@ -107,13 +116,13 @@ export default function Landing() {
           <div>
             <span className="animate-fade-up inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-violet-100">
               <Icon name="spark" className="h-3.5 w-3.5" />
-              Built for web designers &amp; freelancers
+              Built for freelance website developers
             </span>
             <h1 className="animate-fade-up delay-1 mt-5 text-[clamp(1.95rem,6vw,3.25rem)] font-bold leading-[1.12] tracking-tight text-balance text-slate-900">
               Find local businesses that <span className="text-violet-600">need a website</span> — today
             </h1>
             <p className="animate-fade-up delay-2 mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
-              Search by city and business type, see which sites need work, and draft a WhatsApp pitch based on what you find.
+              Find local businesses that need a new or better website. See what you can improve and draft a WhatsApp pitch around it.
             </p>
             <div className="animate-fade-up delay-3 mt-6 grid gap-3 min-[420px]:flex min-[420px]:flex-wrap">
               <Link
@@ -145,7 +154,16 @@ export default function Landing() {
               </span>
             </p>
           </div>
-          <SampleCard />
+          <div className="relative isolate min-w-0 overflow-hidden rounded-2xl bg-violet-100 shadow-xl shadow-violet-900/15 ring-1 ring-violet-200">
+            <Image
+              src="/freelance-developer.webp"
+              alt="Freelance website developer working at a laptop"
+              width={1200}
+              height={800}
+              sizes="(min-width: 1024px) 480px, (min-width: 640px) 85vw, 92vw"
+              className="aspect-[3/2] w-full object-cover"
+            />
+          </div>
         </div>
       </section>
 
@@ -168,6 +186,16 @@ export default function Landing() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="grid items-center gap-6 rounded-3xl border border-violet-100 bg-violet-50/70 p-5 sm:p-8 lg:grid-cols-2 lg:gap-12">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">See what makes a lead worth contacting</h2>
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-600 sm:text-base">
+            Check the website status, reviews and contact details before deciding who to pitch. Start your message with something specific you can improve.
+          </p>
+        </div>
+        <SampleCard />
       </section>
 
       {/* Features */}
@@ -225,7 +253,7 @@ export default function Landing() {
           </div>
 
           <div className="animate-fade-up delay-2 relative rounded-2xl bg-slate-900 p-5 text-white ring-1 ring-slate-900">
-            <h3 className="font-semibold">Pro</h3>
+            <h3 className="flex items-center gap-2 font-semibold"><Icon name="crown" className="size-5 text-violet-300" /> Pro</h3>
             <p className="mt-2 text-4xl font-bold tracking-tight">
               {PRICES.monthly.perMonth}
               <span className="text-base font-medium text-slate-400"> / month</span>
