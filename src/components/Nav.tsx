@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import Icon from "@/components/Icon";
+import Icon, { type IconName } from "@/components/Icon";
 import Logo from "@/components/Logo";
 import { clearAccount, refreshAccount, useAccount } from "@/lib/account";
 import { signOut, useAuth, useLeads } from "@/lib/storage";
@@ -28,7 +28,7 @@ export default function Nav() {
 
   useEffect(() => {
     if (!menuOpen) return;
-    const desktop = window.matchMedia("(min-width: 48rem)");
+    const desktop = window.matchMedia("(min-width: 64rem)");
     const closeOnDesktop = () => {
       if (desktop.matches) drawer.current?.close();
     };
@@ -46,35 +46,41 @@ export default function Nav() {
     drawer.current?.close();
   }
 
-  const items = session
+  const items: { href: string; label: string; icon: IconName; count?: number }[] = session
     ? [
-        { href: "/", label: "Find leads" },
-        { href: "/leads", label: count ? "My leads (" + count + ")" : "My leads" },
-        { href: "/settings", label: "My branding" },
-        ...(account?.isAdmin ? [{ href: "/admin", label: "Admin" }] : []),
-        { href: "/plans", label: account?.plan === "pro" ? "Pro plan" : "Upgrade to Pro" },
+        { href: "/", label: "Find leads", icon: "search" },
+        { href: "/leads", label: "My leads", icon: "users", count },
+        { href: "/settings", label: "My branding", icon: "sliders" },
+        ...(account?.isAdmin ? [{ href: "/admin", label: "Admin", icon: "shield" as const }] : []),
+        { href: "/plans", icon: "spark", label: account?.plan === "pro" ? "Pro plan" : "Upgrade to Pro" },
       ]
     : [
-        { href: "/#pricing", label: "Pricing" },
-        { href: "/contact", label: "Contact" },
-        { href: "/login", label: "Log in" },
+        { href: "/#pricing", label: "Pricing", icon: "card" },
+        { href: "/contact", label: "Contact", icon: "mail" },
+        { href: "/login", label: "Log in", icon: "lock" },
       ];
 
   function navigation(mobile: boolean) {
     const linkStyle = mobile ? "min-h-12 px-4" : "px-3 py-2";
     return (
-      <nav aria-label="Main navigation" className={mobile ? "grid gap-2" : "hidden items-center gap-1 md:flex"}>
-        {items.map(({ href, label }) => (
+      <nav aria-label="Main navigation" className={mobile ? "grid gap-2" : "hidden items-center gap-1 lg:flex"}>
+        {items.map(({ href, label, icon, count }) => (
           <Link
             key={href}
             href={href}
             onClick={mobile ? closeMenu : undefined}
             aria-current={path === href ? "page" : undefined}
-            className={"flex items-center rounded-xl text-sm font-medium transition-colors " + linkStyle + " " + (
+            className={"flex items-center gap-2 rounded-xl text-sm font-medium transition-colors " + linkStyle + " " + (
               path === href ? "bg-violet-50 text-violet-700" : "text-slate-700 hover:bg-slate-100"
             )}
           >
-            {label}
+            <Icon name={icon} className="size-4 shrink-0 text-violet-600" />
+            <span>{label}</span>
+            {count !== undefined && (
+              <span className={`inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-violet-100 px-1.5 text-xs font-semibold tabular-nums text-violet-800 ${mobile ? "ml-auto" : ""}`}>
+                {count}<span className="sr-only"> saved leads</span>
+              </span>
+            )}
           </Link>
         ))}
         {session ? (
@@ -86,15 +92,16 @@ export default function Nav() {
             }}
             className={"flex items-center gap-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100 " + linkStyle}
           >
-            <Icon name="lock" className="h-4 w-4" />
+            <Icon name="arrow" className="size-4 shrink-0 text-violet-600" />
             <span className={mobile ? undefined : "sr-only"}>Log out</span>
           </button>
         ) : (
           <Link
             href="/login"
             onClick={mobile ? closeMenu : undefined}
-            className={"flex items-center justify-center rounded-xl bg-violet-600 text-sm font-semibold text-white hover:bg-violet-700 " + linkStyle}
+            className={"flex items-center justify-center gap-2 rounded-xl bg-violet-600 text-sm font-semibold text-white hover:bg-violet-700 " + linkStyle}
           >
+            <Icon name="arrow" className="size-4 shrink-0" />
             Start free
           </Link>
         )}
@@ -119,7 +126,7 @@ export default function Nav() {
             drawer.current?.showModal();
             setMenuOpen(true);
           }}
-          className="grid size-11 shrink-0 place-items-center rounded-xl border border-violet-100 bg-violet-50 text-violet-700 md:hidden"
+          className="grid size-11 shrink-0 place-items-center rounded-xl border border-violet-100 bg-violet-50 text-violet-700 lg:hidden"
         >
           <Icon name="menu" className="size-5" />
         </button>
