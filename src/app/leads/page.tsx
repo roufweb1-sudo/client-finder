@@ -79,6 +79,7 @@ export default function LeadsPage() {
   const loaded = useLeadsLoaded();
   const date = useSyncExternalStore(subscribeToDate, today, () => "");
   const [pitching, setPitching] = useState<Lead | null>(null);
+  const [pitchingEmail, setPitchingEmail] = useState<Lead | null>(null);
   const [following, setFollowing] = useState<Lead | null>(null);
   const [tab, setTab] = useState<LeadFilter>("All");
   const [query, setQuery] = useState("");
@@ -348,6 +349,13 @@ export default function LeadsPage() {
                     WhatsApp
                   </a>
                 )}
+                <button
+                  onClick={() => setPitchingEmail(l)}
+                  className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 px-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  <Icon name="mail" className="size-4" />
+                  Email
+                </button>
                 {l.phone && (
                   <a
                     href={`tel:${l.intlPhone || l.phone}`}
@@ -417,16 +425,25 @@ export default function LeadsPage() {
         })}
       </ul>
 
-      {pitching && (
-        <PitchModal
-          business={pitching}
-          siteCheck={pitching.siteCheck}
-          onClose={() => setPitching(null)}
-          email={pitching.email}
-          onEmailChange={(v) => updateLead(pitching.id, { email: v.trim() || null })}
-          onSent={() => pitching.status === "New" && setStatus(pitching, "Contacted")}
-        />
-      )}
+      {(() => {
+        const lead = pitching ?? pitchingEmail;
+        if (!lead) return null;
+        const close = () => {
+          setPitching(null);
+          setPitchingEmail(null);
+        };
+        return (
+          <PitchModal
+            business={lead}
+            siteCheck={lead.siteCheck}
+            initialChannel={pitchingEmail ? "email" : undefined}
+            onClose={close}
+            email={lead.email}
+            onEmailChange={(v) => updateLead(lead.id, { email: v.trim() || null })}
+            onSent={() => lead.status === "New" && setStatus(lead, "Contacted")}
+          />
+        );
+      })()}
       {following && <FollowUpModal lead={following} onClose={() => setFollowing(null)} onSent={(days) => afterFollowUp(following, days)} />}
     </div>
   );

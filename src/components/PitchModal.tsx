@@ -31,12 +31,14 @@ type Props = {
   onSent?: () => void; // e.g. mark lead as Contacted
   /** The lead's email address, when we already have one saved. */
   email?: string | null;
+  /** Open straight onto a channel, e.g. when the user pressed "Email" on a lead. */
+  initialChannel?: PitchChannel;
   onEmailChange?: (email: string) => void;
 };
 
-export default function PitchModal({ business, siteCheck, onClose, onSent, email: savedEmail, onEmailChange }: Props) {
+export default function PitchModal({ business, siteCheck, onClose, onSent, email: savedEmail, onEmailChange, initialChannel }: Props) {
   const profile = useProfile();
-  const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
+  const [prefs, setPrefs] = useState<Prefs>(() => ({ ...loadPrefs(), ...(initialChannel ? { channel: initialChannel } : {}) }));
   const [text, setText] = useState("");
   const [subject, setSubject] = useState("");
   const [email, setEmail] = useState(savedEmail || "");

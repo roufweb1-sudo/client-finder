@@ -67,7 +67,7 @@ function WelcomeForm({ saved }: { saved: Profile }) {
   return (
     <div className="mx-auto max-w-lg animate-fade-up">
       <div className="text-center">
-        <Logo markClass="mx-auto h-11 w-11" />
+        <Logo className="justify-center" markClass="h-10 w-10" />
         <h1 className="mt-4 text-2xl font-bold">Welcome — let&apos;s sign your pitches properly</h1>
         <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500">
           Every pitch and audit report goes out in your name. Fill this in once and you never think about it again.
